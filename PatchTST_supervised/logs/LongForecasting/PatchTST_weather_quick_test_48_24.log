@@ -1,0 +1,106 @@
+Args in experiment:
+Namespace(activation='gelu', affine=0, batch_size=8, c_out=7, checkpoints='./checkpoints/', d_ff=64, d_layers=1, d_model=32, data='custom', data_path='weather.csv', dec_in=7, decomposition=0, des='Exp', devices='0,1,2,3', distil=True, do_predict=False, dropout=0.1, e_layers=1, embed='timeF', embed_type=0, enc_in=21, factor=1, fc_dropout=0.1, features='M', freq='h', gpu=0, head_dropout=0.0, individual=0, is_training=1, itr=1, kernel_size=25, label_len=48, learning_rate=0.0001, loss='mse', lradj='type3', model='PatchTST', model_id='weather_quick_test_48_24', moving_avg=25, n_heads=4, num_workers=10, output_attention=False, padding_patch='end', patch_len=4, patience=1, pct_start=0.3, pred_len=24, random_seed=2021, revin=1, root_path='./dataset/weather/', seq_len=48, stride=2, subtract_last=0, target='OT', test_flop=False, train_epochs=1, use_amp=False, use_gpu=False, use_multi_gpu=False)
+Use CPU
+>>>>>>>start training : weather_quick_test_48_24_PatchTST_custom_ftM_sl48_ll48_pl24_dm32_nh4_el1_dl1_df64_fc1_ebtimeF_dtTrue_Exp_0>>>>>>>>>>>>>>>>>>>>>>>>>>
+train 36816
+val 5247
+test 10516
+	iters: 100, epoch: 1 | loss: 0.3585793
+	speed: 0.0226s/iter; left time: 101.9044s
+	iters: 200, epoch: 1 | loss: 0.3936895
+	speed: 0.0198s/iter; left time: 87.1842s
+	iters: 300, epoch: 1 | loss: 0.5610700
+	speed: 0.0183s/iter; left time: 78.8711s
+	iters: 400, epoch: 1 | loss: 0.6072474
+	speed: 0.0200s/iter; left time: 84.1138s
+	iters: 500, epoch: 1 | loss: 0.7040648
+	speed: 0.0201s/iter; left time: 82.4406s
+	iters: 600, epoch: 1 | loss: 0.7261629
+	speed: 0.0156s/iter; left time: 62.3214s
+	iters: 700, epoch: 1 | loss: 0.4695016
+	speed: 0.0191s/iter; left time: 74.4094s
+	iters: 800, epoch: 1 | loss: 0.2402541
+	speed: 0.0190s/iter; left time: 72.2851s
+	iters: 900, epoch: 1 | loss: 2.3032768
+	speed: 0.0178s/iter; left time: 65.8530s
+	iters: 1000, epoch: 1 | loss: 0.5053053
+	speed: 0.0171s/iter; left time: 61.6482s
+	iters: 1100, epoch: 1 | loss: 0.2723399
+	speed: 0.0168s/iter; left time: 58.8785s
+	iters: 1200, epoch: 1 | loss: 0.3902872
+	speed: 0.0162s/iter; left time: 55.1646s
+	iters: 1300, epoch: 1 | loss: 0.3328434
+	speed: 0.0168s/iter; left time: 55.6227s
+	iters: 1400, epoch: 1 | loss: 0.4065500
+	speed: 0.0159s/iter; left time: 50.9371s
+	iters: 1500, epoch: 1 | loss: 0.2630463
+	speed: 0.0159s/iter; left time: 49.3172s
+	iters: 1600, epoch: 1 | loss: 0.2948745
+	speed: 0.0159s/iter; left time: 47.8324s
+	iters: 1700, epoch: 1 | loss: 0.5089489
+	speed: 0.0155s/iter; left time: 45.0264s
+	iters: 1800, epoch: 1 | loss: 0.3682336
+	speed: 0.0160s/iter; left time: 44.9504s
+	iters: 1900, epoch: 1 | loss: 0.2554444
+	speed: 0.0158s/iter; left time: 42.8005s
+	iters: 2000, epoch: 1 | loss: 0.7543341
+	speed: 0.0161s/iter; left time: 41.8885s
+	iters: 2100, epoch: 1 | loss: 0.6074027
+	speed: 0.0159s/iter; left time: 39.7760s
+	iters: 2200, epoch: 1 | loss: 0.5479980
+	speed: 0.0155s/iter; left time: 37.1973s
+	iters: 2300, epoch: 1 | loss: 0.4629761
+	speed: 0.0160s/iter; left time: 36.9505s
+	iters: 2400, epoch: 1 | loss: 0.5058280
+	speed: 0.0160s/iter; left time: 35.1862s
+	iters: 2500, epoch: 1 | loss: 0.1757609
+	speed: 0.0153s/iter; left time: 32.0813s
+	iters: 2600, epoch: 1 | loss: 0.3275348
+	speed: 0.0154s/iter; left time: 30.8773s
+	iters: 2700, epoch: 1 | loss: 0.3877724
+	speed: 0.0153s/iter; left time: 29.1228s
+	iters: 2800, epoch: 1 | loss: 0.4802722
+	speed: 0.0157s/iter; left time: 28.2185s
+	iters: 2900, epoch: 1 | loss: 0.4118945
+	speed: 0.0167s/iter; left time: 28.4295s
+	iters: 3000, epoch: 1 | loss: 0.2735800
+	speed: 0.0163s/iter; left time: 26.1585s
+	iters: 3100, epoch: 1 | loss: 0.2792638
+	speed: 0.0160s/iter; left time: 24.1199s
+	iters: 3200, epoch: 1 | loss: 0.2165971
+	speed: 0.0167s/iter; left time: 23.4500s
+	iters: 3300, epoch: 1 | loss: 0.3264163
+	speed: 0.0156s/iter; left time: 20.3355s
+	iters: 3400, epoch: 1 | loss: 0.4700756
+	speed: 0.0157s/iter; left time: 18.9214s
+	iters: 3500, epoch: 1 | loss: 0.2755162
+	speed: 0.0157s/iter; left time: 17.3453s
+	iters: 3600, epoch: 1 | loss: 0.3465722
+	speed: 0.0152s/iter; left time: 15.2398s
+	iters: 3700, epoch: 1 | loss: 0.3523376
+	speed: 0.0160s/iter; left time: 14.4455s
+	iters: 3800, epoch: 1 | loss: 0.4202603
+	speed: 0.0163s/iter; left time: 13.1090s
+	iters: 3900, epoch: 1 | loss: 0.2384946
+	speed: 0.0198s/iter; left time: 13.9098s
+	iters: 4000, epoch: 1 | loss: 2.6661975
+	speed: 0.0187s/iter; left time: 11.2691s
+	iters: 4100, epoch: 1 | loss: 0.2858635
+	speed: 0.0181s/iter; left time: 9.1040s
+	iters: 4200, epoch: 1 | loss: 0.3486850
+	speed: 0.0190s/iter; left time: 7.6705s
+	iters: 4300, epoch: 1 | loss: 0.2084623
+	speed: 0.0196s/iter; left time: 5.9395s
+	iters: 4400, epoch: 1 | loss: 0.3170950
+	speed: 0.0181s/iter; left time: 3.6679s
+	iters: 4500, epoch: 1 | loss: 0.4112671
+	speed: 0.0147s/iter; left time: 1.5162s
+	iters: 4600, epoch: 1 | loss: 0.2262856
+	speed: 0.0153s/iter; left time: 0.0459s
+Epoch: 1 cost time: 77.9543788433075
+Epoch: 1, Steps: 4602 | Train Loss: 0.5897830 Vali Loss: 0.4319603 Test Loss: 0.1364214
+Validation loss decreased (inf --> 0.431960).  Saving model ...
+Updating learning rate to 0.0001
+>>>>>>>testing : weather_quick_test_48_24_PatchTST_custom_ftM_sl48_ll48_pl24_dm32_nh4_el1_dl1_df64_fc1_ebtimeF_dtTrue_Exp_0<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+test 10516
+mse:0.13642147183418274, mae:0.16481135785579681, rse:0.487060010433197
