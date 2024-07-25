@@ -4,6 +4,7 @@ import torch
 from exp.exp_main import Exp_Main
 import random
 import numpy as np
+from sklearn.metrics import accuracy_score, f1_score
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Autoformer & Transformer family for Time Series Forecasting')
@@ -31,10 +32,14 @@ if __name__ == '__main__':
                         help='freq for time features encoding, options:[s:secondly, t:minutely, h:hourly, d:daily, b:business days, w:weekly, m:monthly], you can also use more detailed freq like 15min or 3h')
     parser.add_argument('--checkpoints', type=str, default='./checkpoints/', help='location of model checkpoints')
 
+    # classification task
+    parser.add_argument('--seq_len', type=int, default=960, help='input sequence length')
+    parser.add_argument('--num_classes', type=int, default=2, help='number of classes for classification')
+    
     # forecasting task
-    parser.add_argument('--seq_len', type=int, default=96, help='input sequence length')
-    parser.add_argument('--label_len', type=int, default=48, help='start token length')
-    parser.add_argument('--pred_len', type=int, default=96, help='prediction sequence length')
+    #parser.add_argument('--seq_len', type=int, default=96, help='input sequence length')
+    #parser.add_argument('--label_len', type=int, default=48, help='start token length')
+    #parser.add_argument('--pred_len', type=int, default=96, help='prediction sequence length')
 
 
     # DLinear
@@ -83,7 +88,8 @@ if __name__ == '__main__':
     parser.add_argument('--patience', type=int, default=100, help='early stopping patience')
     parser.add_argument('--learning_rate', type=float, default=0.0001, help='optimizer learning rate')
     parser.add_argument('--des', type=str, default='test', help='exp description')
-    parser.add_argument('--loss', type=str, default='mse', help='loss function')
+    #parser.add_argument('--loss', type=str, default='mse', help='loss function')
+    parser.add_argument('--loss', type=str, default='cross_entropy', help='loss function') # for classification 
     parser.add_argument('--lradj', type=str, default='type3', help='adjust learning rate')
     parser.add_argument('--pct_start', type=float, default=0.3, help='pct_start')
     parser.add_argument('--use_amp', action='store_true', help='use automatic mixed precision training', default=False)
@@ -120,24 +126,37 @@ if __name__ == '__main__':
     if args.is_training:
         for ii in range(args.itr):
             # setting record of experiments
-            setting = '{}_{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_fc{}_eb{}_dt{}_{}_{}'.format(
+            # setting = '{}_{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_fc{}_eb{}_dt{}_{}_{}'.format(
+            #     args.model_id,
+            #     args.model,
+            #     args.data,
+            #     args.features,
+            #     args.seq_len,
+            #     args.label_len,
+            #     args.pred_len,
+            #     args.d_model,
+            #     args.n_heads,
+            #     args.e_layers,
+            #     args.d_layers,
+            #     args.d_ff,
+            #     args.factor,
+            #     args.embed,
+            #     args.distil,
+            #     args.des,ii)
+
+            # for classification
+            setting = '{}_{}_{}_sl{}_nc{}_dm{}_nh{}_el{}_df{}_fc{}_{}'.format(
                 args.model_id,
                 args.model,
                 args.data,
-                args.features,
                 args.seq_len,
-                args.label_len,
-                args.pred_len,
+                args.num_classes,
                 args.d_model,
                 args.n_heads,
                 args.e_layers,
-                args.d_layers,
                 args.d_ff,
                 args.factor,
-                args.embed,
-                args.distil,
-                args.des,ii)
-                # args.num_classes
+                args.des, ii)
 
             exp = Exp(args)  # set experiments
             print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
@@ -153,22 +172,36 @@ if __name__ == '__main__':
             torch.cuda.empty_cache()
     else:
         ii = 0
-        setting = '{}_{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_fc{}_eb{}_dt{}_{}_{}'.format(args.model_id,
-                                                                                                    args.model,
-                                                                                                    args.data,
-                                                                                                    args.features,
-                                                                                                    args.seq_len,
-                                                                                                    args.label_len,
-                                                                                                    args.pred_len,
-                                                                                                    args.d_model,
-                                                                                                    args.n_heads,
-                                                                                                    args.e_layers,
-                                                                                                    args.d_layers,
-                                                                                                    args.d_ff,
-                                                                                                    args.factor,
-                                                                                                    args.embed,
-                                                                                                    args.distil,
-                                                                                                    args.des, ii)
+        # setting = '{}_{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_fc{}_eb{}_dt{}_{}_{}'.format(args.model_id,
+        #                                                                                             args.model,
+        #                                                                                             args.data,
+        #                                                                                             args.features,
+        #                                                                                             args.seq_len,
+        #                                                                                             args.label_len,
+        #                                                                                             args.pred_len,
+        #                                                                                             args.d_model,
+        #                                                                                             args.n_heads,
+        #                                                                                             args.e_layers,
+        #                                                                                             args.d_layers,
+        #                                                                                             args.d_ff,
+        #                                                                                             args.factor,
+        #                                                                                             args.embed,
+        #                                                                                             args.distil,
+        #                                                                                             args.des, ii)
+
+        # for classification
+        setting = '{}_{}_{}_sl{}_nc{}_dm{}_nh{}_el{}_df{}_fc{}_{}'.format(
+            args.model_id,
+            args.model,
+            args.data,
+            args.seq_len,
+            args.num_classes,
+            args.d_model,
+            args.n_heads,
+            args.e_layers,
+            args.d_ff,
+            args.factor,
+            args.des, ii)
 
         exp = Exp(args)  # set experiments
         print('>>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
