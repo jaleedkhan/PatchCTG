@@ -2,38 +2,33 @@
 
 We are adapting PatchTST for binary classification of time series, specifically for classifying CTG signals. Below is a summary of modifications and necessary updates for this adaptation.
 
-## Completed Updates
+## Updates
 
-1. **PatchTST.py**
+1. **PatchTST.py** (done)
    - Removed target_window and modified the final layer to output a single value with a sigmoid activation for binary classification 
 
-2. **data_factory.py**
+2. **data_factory.py** (done)
    - Added handling for our dataset 
  
-3. **data_loader.py**
+3. **data_loader.py** (done)
    - Implemented Dataset_CTG class for loading our dataset 
 
-4. **ctg.sh** 
+4. **ctg.sh** (done)
    - Created a script to run the binary classification task using our dataset 
 
-5. **exp_main.py** 
+5. **exp_main.py** (done)
    - Modified the main experiment script to handle binary classification, including changing the loss function to `nn.BCEWithLogitsLoss()` and adjusting the output processing to handle binary labels
 
-6. **metrics.py** 
+6. **metrics.py** (done)
    - Implemented metrics for binary classification, including functions for accuracy, precision, recall, F1-score and AUC 
 
-## Updates to be Done
-
-1. **Update run_longExp.py**
+7. **Update run_longExp.py** (done)
    - Adapt the long experiment script to execute the binary classification task. Change the dataset and model handling for binary classification. Adjust logging to include binary classification metrics.
 
-2. **Create run_classification.py**
-   - Create a script specifically for running binary classification experiments. Integrate model training, validation, and testing for binary classification.
-
-3. **Verify and Update ctg.sh Script**
+8. **Verify and Update ctg.sh Script**
    - Ensure the script correctly references all updated files and settings. Confirm paths, model parameters, and logging are correctly set for binary classification.
 
-4. **Test and Debug**
+9. **Test and Debug**
    - Test the complete repository for binary classification.
 
 # PatchTST (ICLR 2023)

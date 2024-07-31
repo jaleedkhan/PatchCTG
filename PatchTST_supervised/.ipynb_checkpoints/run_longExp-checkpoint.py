@@ -5,12 +5,11 @@ from exp.exp_main import Exp_Main
 import random
 import numpy as np
 from sklearn.metrics import accuracy_score, f1_score
+import torch.nn as nn
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Autoformer & Transformer family for Time Series Forecasting')
-
-    # Add argument for number of classes
-    # parser.add_argument('--num_classes', type=int, required=True, help='number of classes for classification')
+    #parser = argparse.ArgumentParser(description='Autoformer & Transformer family for Time Series Forecasting')
+    parser = argparse.ArgumentParser(description='PatchTST for Binary Classification')
 
     # random seed
     parser.add_argument('--random_seed', type=int, default=2021, help='random seed')
@@ -18,13 +17,18 @@ if __name__ == '__main__':
     # basic config
     parser.add_argument('--is_training', type=int, required=True, default=1, help='status')
     parser.add_argument('--model_id', type=str, required=True, default='test', help='model id')
-    parser.add_argument('--model', type=str, required=True, default='Autoformer',
-                        help='model name, options: [Autoformer, Informer, Transformer]')
+    #parser.add_argument('--model', type=str, required=True, default='Autoformer',
+    #                    help='model name, options: [Autoformer, Informer, Transformer]')
+    parser.add_argument('--model', type=str, required=True, default='PatchTST', help='model name')
+
 
     # data loader
-    parser.add_argument('--data', type=str, required=True, default='ETTm1', help='dataset type')
-    parser.add_argument('--root_path', type=str, default='./data/ETT/', help='root path of the data file')
-    parser.add_argument('--data_path', type=str, default='ETTh1.csv', help='data file')
+    parser.add_argument('--data', type=str, required=True, default='CTG', help='dataset type')
+    parser.add_argument('--root_path', type=str, default='./data/CTG/', help='root path of the data file')
+    parser.add_argument('--data_path', type=str, default='X.npy', help='data file')
+    #parser.add_argument('--data', type=str, required=True, default='ETTm1', help='dataset type')
+    #parser.add_argument('--root_path', type=str, default='./data/ETT/', help='root path of the data file')
+    #parser.add_argument('--data_path', type=str, default='ETTh1.csv', help='data file')
     parser.add_argument('--features', type=str, default='M',
                         help='forecasting task, options:[M, S, MS]; M:multivariate predict multivariate, S:univariate predict univariate, MS:multivariate predict univariate')
     parser.add_argument('--target', type=str, default='OT', help='target feature in S or MS task')
@@ -60,9 +64,12 @@ if __name__ == '__main__':
 
     # Formers 
     parser.add_argument('--embed_type', type=int, default=0, help='0: default 1: value embedding + temporal embedding + positional embedding 2: value embedding + temporal embedding 3: value embedding + positional embedding 4: value embedding')
-    parser.add_argument('--enc_in', type=int, default=7, help='encoder input size') # DLinear with --individual, use this hyperparameter as the number of channels
-    parser.add_argument('--dec_in', type=int, default=7, help='decoder input size')
-    parser.add_argument('--c_out', type=int, default=7, help='output size')
+    parser.add_argument('--enc_in', type=int, default=2, help='encoder input size')  # Adjust based on the actual input size
+    parser.add_argument('--dec_in', type=int, default=2, help='decoder input size')  # Adjust based on the actual input size
+    parser.add_argument('--c_out', type=int, default=1, help='output size for binary classification')
+    #parser.add_argument('--enc_in', type=int, default=7, help='encoder input size') # DLinear with --individual, use this hyperparameter as the number of channels
+    #parser.add_argument('--dec_in', type=int, default=7, help='decoder input size')
+    #parser.add_argument('--c_out', type=int, default=7, help='output size')
     parser.add_argument('--d_model', type=int, default=512, help='dimension of model')
     parser.add_argument('--n_heads', type=int, default=8, help='num of heads')
     parser.add_argument('--e_layers', type=int, default=2, help='num of encoder layers')
@@ -158,6 +165,7 @@ if __name__ == '__main__':
                 args.factor,
                 args.des, ii)
 
+
             exp = Exp(args)  # set experiments
             print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
             exp.train(setting)
@@ -202,6 +210,7 @@ if __name__ == '__main__':
             args.d_ff,
             args.factor,
             args.des, ii)
+
 
         exp = Exp(args)  # set experiments
         print('>>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
