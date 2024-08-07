@@ -5,13 +5,14 @@ We are adapting PatchTST for binary classification of time series, specifically 
 ## Updates
 
 1. **PatchTST.py** (done)
-   - Removed target_window and modified the final layer to output a single value with a sigmoid activation for binary classification 
+   - Set `target_window=1` during the initialization to ensure proper handling of output dimensions for binary classification
+   - Modified the final layer to output a single value with a sigmoid activation for binary classification 
 
 2. **data_factory.py** (done)
    - Added handling for our dataset 
  
 3. **data_loader.py** (done)
-   - Implemented Dataset_CTG class for loading our dataset 
+   - Implemented `Dataset_CTG` class for loading our dataset 
 
 4. **ctg.sh** (done)
    - Created a script to run the binary classification task using our dataset 
@@ -26,7 +27,7 @@ We are adapting PatchTST for binary classification of time series, specifically 
    - Adapt the long experiment script to execute the binary classification task. Change the dataset and model handling for binary classification. Adjust logging to include binary classification metrics.
 
 8. **Verify and Update ctg.sh Script**
-   - Ensure the script correctly references all updated files and settings. Confirm paths, model parameters, and logging are correctly set for binary classification.
+   - Ensure the script correctly references all updated files and settings. Confirm paths, model parameters and logging are correctly set for binary classification.
 
 9. **Test and Debug**
    - Test the complete repository for binary classification.

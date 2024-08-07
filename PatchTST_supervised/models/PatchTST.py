@@ -67,7 +67,7 @@ class Model(nn.Module):
                                   pretrain_head=pretrain_head, head_type=head_type, individual=individual, revin=revin, affine=affine,
                                   subtract_last=subtract_last, verbose=verbose, **kwargs)
         else:
-            self.model = PatchTST_backbone(c_in=c_in, context_window = context_window, target_window=None, patch_len=patch_len, stride=stride, 
+            self.model = PatchTST_backbone(c_in=c_in, context_window = context_window, target_window=1, patch_len=patch_len, stride=stride, 
                                   max_seq_len=max_seq_len, n_layers=n_layers, d_model=d_model,
                                   n_heads=n_heads, d_k=d_k, d_v=d_v, d_ff=d_ff, norm=norm, attn_dropout=attn_dropout,
                                   dropout=dropout, act=act, key_padding_mask=key_padding_mask, padding_var=padding_var, 
@@ -77,7 +77,7 @@ class Model(nn.Module):
                                   subtract_last=subtract_last, verbose=verbose, **kwargs)
         
         # Add classification head and sigmoid 
-        self.classification_head = nn.Linear(d_model, 1)
+        self.classification_head = nn.Linear(2, 1)
         self.sigmoid = nn.Sigmoid()
     
     
@@ -94,12 +94,8 @@ class Model(nn.Module):
             x = self.model(x)
             x = x.permute(0,2,1)    # x: [Batch, Input length, Channel]
 
-        print("Shape before classification head:", x.shape)
-
         # Apply global average pooling across the time dimension
         x = x.mean(dim=1)  # Aggregate features across the time steps
-        
-        print("Shape after pooling:", x.shape)
         
         x = self.classification_head(x)
         x = self.sigmoid(x)
