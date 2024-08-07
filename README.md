@@ -31,6 +31,12 @@ We are adapting PatchTST for binary classification of time series, specifically 
 
 9. **Test and Debug**
    - Test the complete repository for binary classification.
+  
+## Training
+
+1. Navigate to `patchtst_classification/PatchTST_supervised`
+2. Install all the required packages in `requirements.txt`
+3. Run `sh scripts/PatchTST/ctg.sh` (training progress is logged at `logs/CTG/`)
 
 # PatchTST (ICLR 2023)
 

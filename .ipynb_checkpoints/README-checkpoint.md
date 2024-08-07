@@ -32,10 +32,11 @@ We are adapting PatchTST for binary classification of time series, specifically 
 9. **Test and Debug**
    - Test the complete repository for binary classification.
   
-## Issues
+## Training
 
-1. TypeError occurred because `target_window` was set to `None` in `PatchTST_backbone.py`, causing an invalid initialization of the `nn.Linear` layer in `Flatten_Head`. This was fixed by setting `target_window=1` during the initialization in `PatchTST.py` to ensure proper handling of output dimensions for binary classification.
-2. KeyError occurred becasue the CTG dataset key in `data_dict` in `data_factory.py` is referenced as 'CTG' in the script but is defined as 'ctg'. The key in data_factory.py was updated from 'ctg' to 'CTG'.
+1. Navigate to `patchtst_classification/PatchTST_supervised`
+2. Install all the required packages in `requirements.txt`
+3. Run `sh scripts/PatchTST/ctg.sh` (training progress is logged at `logs/CTG/`)
 
 # PatchTST (ICLR 2023)
 
