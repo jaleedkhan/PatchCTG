@@ -41,7 +41,7 @@ python -u run_longExp.py \
   --patch_len 16 \
   --stride 8 \
   --des 'Exp' \
-  --train_epochs 100 \
+  --train_epochs 1 \
   --patience 20 \
   --itr 1 \
   --batch_size 128 \

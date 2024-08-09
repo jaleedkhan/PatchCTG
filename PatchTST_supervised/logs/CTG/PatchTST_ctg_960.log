@@ -1,37 +1,14 @@
 Args in experiment:
-Namespace(activation='gelu', affine=0, batch_size=128, c_out=1, checkpoints='./checkpoints/ctg', d_ff=256, d_layers=1, d_model=128, data='CTG', data_path='X.npy', dec_in=2, decomposition=0, des='Exp', devices='0,1,2,3', distil=True, do_predict=False, dropout=0.2, e_layers=3, embed='timeF', embed_type=0, enc_in=2, factor=1, fc_dropout=0.2, features='M', freq='h', gpu=0, head_dropout=0.0, individual=0, is_training=1, itr=1, kernel_size=25, learning_rate=0.0001, loss='cross_entropy', lradj='type3', model='PatchTST', model_id='ctg_960', moving_avg=25, n_heads=16, num_classes=2, num_workers=10, output_attention=False, padding_patch='end', patch_len=16, patience=20, pct_start=0.3, random_seed=2021, revin=1, root_path='./dataset/', seq_len=960, stride=8, subtract_last=0, target='OT', test_flop=False, train_epochs=100, use_amp=False, use_gpu=False, use_multi_gpu=False)
+Namespace(activation='gelu', affine=0, batch_size=128, c_out=1, checkpoints='./checkpoints/ctg', d_ff=256, d_layers=1, d_model=128, data='CTG', data_path='X.npy', dec_in=2, decomposition=0, des='Exp', devices='0,1,2,3', distil=True, do_predict=False, dropout=0.2, e_layers=3, embed='timeF', embed_type=0, enc_in=2, factor=1, fc_dropout=0.2, features='M', freq='h', gpu=0, head_dropout=0.0, individual=0, is_training=1, itr=1, kernel_size=25, learning_rate=0.0001, loss='cross_entropy', lradj='type3', model='PatchTST', model_id='ctg_960', moving_avg=25, n_heads=16, num_classes=2, num_workers=10, output_attention=False, padding_patch='end', patch_len=16, patience=20, pct_start=0.3, random_seed=2021, revin=1, root_path='./dataset/', seq_len=960, stride=8, subtract_last=0, target='OT', test_flop=False, train_epochs=1, use_amp=False, use_gpu=False, use_multi_gpu=False)
 Use CPU
 >>>>>>>start training : ctg_960_PatchTST_CTG_sl960_nc2_dm128_nh16_el3_df256_fc1_Exp>>>>>>>>>>>>>>>>>>>>>>>>>>
-train set size: 16471
-val set size: 4118
-test set size: 4118
-	iters: 100, epoch: 1 | loss: 0.6940891
-	speed: 1.2399s/iter; left time: 15748.4400s
-Epoch: 1 cost time: 161.49534606933594
-Epoch: 1, Steps: 128 | Train Loss: 0.6944907 Vali Loss: 0.6931192 Test Loss: 0.6931192
-Validation loss decreased (inf --> 0.693119).  Saving model ...
+train set size: 800
+val set size: 200
+test set size: 200
+Epoch: 1 cost time: 10.855486869812012
+Epoch: 1, Steps: 6 | Train Loss: 0.7006491 Vali Loss: 0.7050315 Test Loss: 0.6869554
+Validation loss decreased (inf --> 0.705031).  Saving model ...
 Updating learning rate to 0.0001
-	iters: 100, epoch: 2 | loss: 0.6931446
-	speed: 2.0138s/iter; left time: 25320.0351s
-Epoch: 2 cost time: 167.85040664672852
-Epoch: 2, Steps: 128 | Train Loss: 0.6931360 Vali Loss: 0.6931500 Test Loss: 0.6931500
-EarlyStopping counter: 1 out of 20
-Updating learning rate to 0.0001
-	iters: 100, epoch: 3 | loss: 0.6931453
-	speed: 1.8997s/iter; left time: 23641.3017s
-Epoch: 3 cost time: 157.30235266685486
-Epoch: 3, Steps: 128 | Train Loss: 0.6930645 Vali Loss: 0.6931005 Test Loss: 0.6931005
-Validation loss decreased (0.693119 --> 0.693101).  Saving model ...
-Updating learning rate to 0.0001
-	iters: 100, epoch: 4 | loss: 0.6899966
-	speed: 1.8838s/iter; left time: 23203.3217s
-Epoch: 4 cost time: 158.24283528327942
-Epoch: 4, Steps: 128 | Train Loss: 0.6927772 Vali Loss: 0.6931274 Test Loss: 0.6931274
-EarlyStopping counter: 1 out of 20
-Updating learning rate to 9e-05
-	iters: 100, epoch: 5 | loss: 0.6931472
-	speed: 1.8968s/iter; left time: 23120.4581s
-Epoch: 5 cost time: 159.64790225028992
-Epoch: 5, Steps: 128 | Train Loss: 0.6928643 Vali Loss: 0.6930129 Test Loss: 0.6930129
-Validation loss decreased (0.693101 --> 0.693013).  Saving model ...
-Updating learning rate to 8.1e-05
+>>>>>>>testing : ctg_960_PatchTST_CTG_sl960_nc2_dm128_nh16_el3_df256_fc1_Exp<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+test set size: 200
+accuracy:0.515625, precision:0.3333333333333333, recall:0.01639344262295082, f1:0.03125, auc:0.6256422804012723

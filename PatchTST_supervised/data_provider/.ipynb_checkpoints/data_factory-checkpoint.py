@@ -20,6 +20,10 @@ def data_provider(args, flag):
         # Load CTG dataset
         X = np.load('../../gabriel_data/X.npy')
         y = np.load('../../gabriel_data/y.npy')
+
+        # Subset for debugging
+        selected_indices = np.concatenate([np.random.choice(np.where(y == c)[0], 500, replace=False) for c in [0, 1]])
+        X, y = X[selected_indices], y[selected_indices]
         
         # Split the data into training (80%) and testing/validation (20%) sets
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=args.random_seed)

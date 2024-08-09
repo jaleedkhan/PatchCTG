@@ -2,7 +2,7 @@ from data_provider.data_factory import data_provider
 from exp.exp_basic import Exp_Basic
 from models import Informer, Autoformer, Transformer, DLinear, Linear, NLinear, PatchTST
 from utils.tools import EarlyStopping, adjust_learning_rate, visual, test_params_flop
-from utils.metrics import metric
+from utils.metrics import metric, classification_metrics
 
 import numpy as np
 import torch
@@ -240,7 +240,7 @@ class Exp_Main(Exp_Basic):
         
         if test:
             print('loading model')
-            self.model.load_state_dict(torch.load(os.path.join('./checkpoints/' + setting, 'checkpoint.pth')))
+            self.model.load_state_dict(torch.load(os.path.join('./checkpoints/ctg/' + setting, 'checkpoint.pth')))
 
         preds = []
         trues = []
@@ -300,22 +300,50 @@ class Exp_Main(Exp_Basic):
                 # preds.append(pred)
                 # trues.append(true)
                 inputx.append(batch_x.detach().cpu().numpy())
+
                 if i % 20 == 0:
-                    input = batch_x.detach().cpu().numpy()
-                    gt = np.concatenate((input[0, :, -1], true[0, :, -1]), axis=0)
-                    pd = np.concatenate((input[0, :, -1], pred[0, :, -1]), axis=0)
+                    input_array = inputx[0]  
+                    trues_array = trues[0]  
+                    preds_array = preds[0] 
+                    gt = np.concatenate((input_array[0, :, -1], [trues_array[0]]), axis=0)
+                    pd = np.concatenate((input_array[0, :, -1], [preds_array[0]]), axis=0)
                     visual(gt, pd, os.path.join(folder_path, str(i) + '.pdf'))
+                    # input = batch_x.detach().cpu().numpy()
+                    # gt = np.concatenate((input[0, :, -1], trues[0, :, -1]), axis=0)
+                    # pd = np.concatenate((input[0, :, -1], preds[0, :, -1]), axis=0)
+                    # visual(gt, pd, os.path.join(folder_path, str(i) + '.pdf'))
+
+            # # Debugging steps
+            # print("Type of preds:", type(preds))
+            # print("Type of trues:", type(trues))
+            
+            # if isinstance(preds, list):
+            #     print("Length of preds list:", len(preds))
+            #     print("Shape of first preds element:", preds[0].shape)
+            
+            # if isinstance(trues, list):
+            #     print("Length of trues list:", len(trues))
+            #     print("Shape of first trues element:", trues[0].shape)
+            
+            # print("Sample content of preds[0]:", preds[0])
+            # print("Sample content of trues[0]:", trues[0])
 
         if self.args.test_flop:
             test_params_flop((batch_x.shape[1],batch_x.shape[2]))
             exit()
-        preds = np.array(preds)
-        trues = np.array(trues)
-        inputx = np.array(inputx)
+        
+        # preds = np.array(preds)
+        # trues = np.array(trues)
+        # inputx = np.array(inputx)
 
-        preds = preds.reshape(-1, preds.shape[-2], preds.shape[-1])
-        trues = trues.reshape(-1, trues.shape[-2], trues.shape[-1])
-        inputx = inputx.reshape(-1, inputx.shape[-2], inputx.shape[-1])
+        # Concatenate all batches
+        preds = np.concatenate(preds, axis=0)
+        trues = np.concatenate(trues, axis=0)
+        inputx = np.concatenate(inputx, axis=0)
+
+        #preds = preds.reshape(-1, preds.shape[-2], preds.shape[-1])
+        #trues = trues.reshape(-1, trues.shape[-2], trues.shape[-1])
+        #inputx = inputx.reshape(-1, inputx.shape[-2], inputx.shape[-1])
 
         # result save
         folder_path = './results/' + setting + '/'
@@ -331,17 +359,17 @@ class Exp_Main(Exp_Basic):
         # f.write('\n')
         # f.close()
 
-        accuracy, precision, recall, f1 = classification_metrics(preds, trues)
-        print('accuracy:{}, precision:{}, recall:{}, f1:{}'.format(accuracy, precision, recall, f1))
+        accuracy, precision, recall, f1, auc = classification_metrics(preds, trues)
+        print('accuracy:{}, precision:{}, recall:{}, f1:{}, auc:{}'.format(accuracy, precision, recall, f1, auc))
         f = open("result.txt", 'a')
         f.write(setting + "  \n")
-        f.write('accuracy:{}, precision:{}, recall:{}, f1:{}'.format(accuracy, precision, recall, f1))
+        f.write('accuracy:{}, precision:{}, recall:{}, f1:{}, auc:{}'.format(accuracy, precision, recall, f1, auc))
         f.write('\n')
         f.write('\n')
         f.close()
 
         # np.save(folder_path + 'metrics.npy', np.array([mae, mse, rmse, mape, mspe,rse, corr]))
-        np.save(folder_path + 'pred.npy', preds)
+        np.save(folder_path + 'preds.npy', preds)
         # np.save(folder_path + 'true.npy', trues)
         # np.save(folder_path + 'x.npy', inputx)
         return

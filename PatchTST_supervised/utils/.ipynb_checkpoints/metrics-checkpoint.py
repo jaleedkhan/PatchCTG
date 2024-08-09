@@ -45,7 +45,7 @@ def metric(pred, true):
 
 # Binary classification metrics
 def accuracy(pred, true):
-    pred_labels = (pred > 0.5).astype(int)
+    pred_labels = (pred > 0.5).astype(int)  # Convert probabilities to binary labels
     true_labels = true.astype(int)
     return accuracy_score(true_labels, pred_labels)
 
@@ -75,4 +75,3 @@ def classification_metrics(pred, true):
     f1_sc = f1(pred, true)
     auc_sc = auc(pred, true)
     return acc, prec, rec, f1_sc, auc_sc
-
