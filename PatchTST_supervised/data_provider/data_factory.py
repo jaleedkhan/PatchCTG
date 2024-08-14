@@ -2,6 +2,7 @@ from data_provider.data_loader import Dataset_ETT_hour, Dataset_ETT_minute, Data
 from torch.utils.data import DataLoader
 from sklearn.model_selection import train_test_split
 import numpy as np
+import torch
 
 data_dict = {
     'ETTh1': Dataset_ETT_hour,
@@ -18,12 +19,12 @@ def data_provider(args, flag):
     
     if args.data == 'CTG':
         # Load CTG dataset
-        X = np.load('../../gabriel_data/X.npy')
-        y = np.load('../../gabriel_data/y.npy')
+        X = np.load('../../../gabriel_data/X.npy')
+        y = np.load('../../../gabriel_data/y.npy')
 
-        # Subset for debugging
-        selected_indices = np.concatenate([np.random.choice(np.where(y == c)[0], 500, replace=False) for c in [0, 1]])
-        X, y = X[selected_indices], y[selected_indices]
+        # # Subset for debugging
+        # selected_indices = np.concatenate([np.random.choice(np.where(y == c)[0], 500, replace=False) for c in [0, 1]])
+        # X, y = X[selected_indices], y[selected_indices]
         
         # Split the data into training (80%) and testing/validation (20%) sets
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=args.random_seed)
@@ -46,12 +47,20 @@ def data_provider(args, flag):
             raise ValueError("Invalid flag passed to data_provider. Should be 'train', 'val', 'test', or 'pred'.")
         
         print(f"{flag} set size: {len(data_set)}")
+
+        # Set up a generator for the DataLoader that uses CUDA if available
+        if torch.cuda.is_available():
+            generator = torch.Generator(device='cuda')
+        else:
+            generator = torch.Generator()
+
         data_loader = DataLoader(
             data_set,
             batch_size=batch_size,
             shuffle=shuffle_flag,
             num_workers=args.num_workers,
-            drop_last=drop_last
+            drop_last=drop_last,
+            generator=generator  # Pass the generator to the DataLoader
         )
         return data_set, data_loader
 

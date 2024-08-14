@@ -11,7 +11,9 @@ from torch import optim
 from torch.optim import lr_scheduler 
 
 import os
+import shutil
 import time
+from datetime import datetime
 
 import warnings
 import matplotlib.pyplot as plt
@@ -239,7 +241,7 @@ class Exp_Main(Exp_Basic):
         test_data, test_loader = self._get_data(flag='test')
         
         if test:
-            print('loading model')
+            print('loading model') 
             self.model.load_state_dict(torch.load(os.path.join('./checkpoints/ctg/' + setting, 'checkpoint.pth')))
 
         preds = []
@@ -370,8 +372,17 @@ class Exp_Main(Exp_Basic):
 
         # np.save(folder_path + 'metrics.npy', np.array([mae, mse, rmse, mape, mspe,rse, corr]))
         np.save(folder_path + 'preds.npy', preds)
-        # np.save(folder_path + 'true.npy', trues)
+        np.save(folder_path + 'trues.npy', trues)
         # np.save(folder_path + 'x.npy', inputx)
+
+        # Save model, settings and results to jResults
+        
+        timestamp = datetime.now().strftime('%Y-%m-%d %H%M')
+        np.save('./jResults/'+timestamp+'/preds.npy', preds)
+        np.save('./jResults/'+timestamp+'/trues.npy', trues)
+        shutil.copyfile(os.path.join('./checkpoints/ctg/'+setting, 'checkpoint.pth'), './jResults/'+timestamp+'/checkpoint.pth')
+        shutil.copyfile(os.path.join('./logs/CTG/PatchTST_ctg_960.log'), './jResults/'+timestamp+'/PatchTST_ctg_960.log')
+                
         return
 
     def predict(self, setting, load=False):

@@ -1,11 +1,44 @@
 import argparse
 import os
 import torch
+import torch.multiprocessing as mp
 from exp.exp_main import Exp_Main
 import random
 import numpy as np
 from sklearn.metrics import accuracy_score, f1_score
 import torch.nn as nn
+
+# Set the start method to 'spawn'
+mp.set_start_method('spawn', force=True)
+
+from exp.exp_main import Exp_Main
+import random
+import numpy as np
+from sklearn.metrics import accuracy_score, f1_score
+import torch.nn as nn
+
+# Set the default tensor type to CUDA
+torch.set_default_tensor_type(torch.cuda.FloatTensor)
+
+# Define the device
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# Override the `to()` method, ensuring it doesn't recursively call itself
+original_to = torch.nn.Module.to
+
+def to_cuda(self, *args, **kwargs):
+    return original_to(self, *args, **kwargs)
+
+torch.nn.Module.to = to_cuda
+
+# Patch the `__init__` method to move models to the GPU without recursion
+original_init = torch.nn.Module.__init__
+
+def new_init(self, *args, **kwargs):
+    original_init(self, *args, **kwargs)  # Call the original __init__
+    original_to(self, device)  # Move the model to the device using the original `to` method
+
+torch.nn.Module.__init__ = new_init
 
 if __name__ == '__main__':
     #parser = argparse.ArgumentParser(description='Autoformer & Transformer family for Time Series Forecasting')
