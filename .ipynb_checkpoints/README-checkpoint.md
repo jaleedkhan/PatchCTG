@@ -1,8 +1,14 @@
-# Adapting PatchTST for Binary Classification of Time Series
+# [PatchTST](https://github.com/yuqinie98/PatchTST/tree/main/PatchTST_supervised) adapted for binary classification of CTGs 
 
-We are adapting PatchTST for binary classification of time series, specifically for classifying CTG signals. Below is a summary of modifications and necessary updates for this adaptation.
+## Instructions 
 
-## Updates
+1. Navigate to `patchtst_classification/PatchTST_supervised` 
+2. Install all the required packages in `requirements.txt` 
+3. (Optional) Set hyperparameters for training in `sh scripts/PatchTST/ctg.sh` 
+4. Run `sh scripts/PatchTST/ctg.sh` to train and test the model (training progress is logged at `logs/CTG/`) 
+5. Run the cells in results section in `patchtst_classification/results_dataset.ipynb` to check training and testing results 
+
+## Updates made in the original repository 
 
 1. **PatchTST.py** (done)
    - Set `target_window=1` during the initialization to ensure proper handling of output dimensions for binary classification
@@ -26,19 +32,13 @@ We are adapting PatchTST for binary classification of time series, specifically 
 7. **Update run_longExp.py** (done)
    - Adapt the long experiment script to execute the binary classification task. Change the dataset and model handling for binary classification. Adjust logging to include binary classification metrics.
 
-8. **Verify and Update ctg.sh Script**
+8. **Verify and Update ctg.sh Script** (done)
    - Ensure the script correctly references all updated files and settings. Confirm paths, model parameters and logging are correctly set for binary classification.
 
-9. **Test and Debug**
+9. **Test and Debug** (done)
    - Test the complete repository for binary classification.
   
-## Training
-
-1. Navigate to `patchtst_classification/PatchTST_supervised`
-2. Install all the required packages in `requirements.txt`
-3. Run `sh scripts/PatchTST/ctg.sh` (training progress is logged at `logs/CTG/`)
-
-# PatchTST (ICLR 2023)
+<!-- # PatchTST (ICLR 2023)
 
 ### This is an offical implementation of PatchTST: [A Time Series is Worth 64 Words: Long-term Forecasting with Transformers](https://arxiv.org/abs/2211.14730). 
 
@@ -155,5 +155,5 @@ If you find this repo useful in your research, please consider citing our paper 
   booktitle = {International Conference on Learning Representations},
   year      = {2023}
 }
-```
+``` -->
 

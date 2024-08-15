@@ -19,8 +19,12 @@ def data_provider(args, flag):
     
     if args.data == 'CTG':
         # Load CTG dataset
-        X = np.load('../../../gabriel_data/X.npy')
-        y = np.load('../../../gabriel_data/y.npy')
+        try:
+            X = np.load('../../../gabriel_data/X.npy')
+            y = np.load('../../../gabriel_data/y.npy')
+        except:
+            X = np.load('../../gabriel_data/X.npy')
+            y = np.load('../../gabriel_data/y.npy')
 
         # # Subset for debugging
         # selected_indices = np.concatenate([np.random.choice(np.where(y == c)[0], 500, replace=False) for c in [0, 1]])
