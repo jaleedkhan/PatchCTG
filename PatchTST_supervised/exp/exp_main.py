@@ -3,6 +3,7 @@ from exp.exp_basic import Exp_Basic
 from models import Informer, Autoformer, Transformer, DLinear, Linear, NLinear, PatchTST
 from utils.tools import EarlyStopping, adjust_learning_rate, visual, test_params_flop
 from utils.metrics import metric, classification_metrics
+from sklearn.metrics import roc_auc_score 
 
 import numpy as np
 import torch
@@ -57,6 +58,8 @@ class Exp_Main(Exp_Basic):
 
     def vali(self, vali_data, vali_loader, criterion):
         total_loss = []
+        all_preds = []  
+        all_trues = []  
         self.model.eval()
         with torch.no_grad():
             #for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(vali_loader):
@@ -75,6 +78,9 @@ class Exp_Main(Exp_Basic):
                 outputs = self.model(batch_x).squeeze()
                 loss = criterion(outputs, batch_y)
                 total_loss.append(loss.item())
+
+                all_preds.extend(outputs.detach().cpu().numpy()) 
+                all_trues.extend(batch_y.detach().cpu().numpy()) 
                 
                 # if self.args.use_amp:
                 #     with torch.cuda.amp.autocast():
@@ -104,8 +110,9 @@ class Exp_Main(Exp_Basic):
 
                 # total_loss.append(loss)
         total_loss = np.average(total_loss)
+        auc = roc_auc_score(all_trues, all_preds)
         self.model.train()
-        return total_loss
+        return total_loss, auc
 
     def train(self, setting):
         train_data, train_loader = self._get_data(flag='train')
@@ -217,11 +224,12 @@ class Exp_Main(Exp_Basic):
 
             print("Epoch: {} cost time: {}".format(epoch + 1, time.time() - epoch_time))
             train_loss = np.average(train_loss)
-            vali_loss = self.vali(vali_data, vali_loader, criterion)
-            test_loss = self.vali(test_data, test_loader, criterion)
+            vali_loss, vali_auc = self.vali(vali_data, vali_loader, criterion)
+            test_loss, test_auc = self.vali(test_data, test_loader, criterion)
 
-            print("Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f} Test Loss: {4:.7f}".format(
-                epoch + 1, train_steps, train_loss, vali_loss, test_loss))
+            print("Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f} Vali AUC: {4:.7f}".format(
+                epoch + 1, train_steps, train_loss, vali_loss, vali_auc))
+            
             early_stopping(vali_loss, self.model, path)
             if early_stopping.early_stop:
                 print("Early stopping")

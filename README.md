@@ -2,11 +2,11 @@
 
 ## Instructions 
 
-1. Navigate to `patchtst_classification/PatchTST_supervised` 
-2. Install all the required packages in `requirements.txt` 
+1. Ensure that the CUDA version installed in your environment is compatible with and PyTorch 1.11.0: `conda install pytorch=1.11 torchvision torchaudio cudatoolkit=11.3 -c pytorch` (Tested successfully with this configuration: Ubuntu 22.04, NVIDIA driver version 560.94, CUDA 11.3, Python 3.8, torch 1.11.0+cu113)
+2. Navigate to `patchctg/PatchTST_supervised` and install the required packages in `requirements.txt`.
 3. (Optional) Set hyperparameters for training in `sh scripts/PatchTST/ctg.sh` 
 4. Run `sh scripts/PatchTST/ctg.sh` to train and test the model (training progress is logged at `logs/CTG/`) 
-5. Run the cells in results section in `patchtst_classification/results_dataset.ipynb` to check training and testing results 
+5. Run the cells in results section in `../results_dataset.ipynb` to check training and testing results 
 
 ## Updates made in the original repository 
 
@@ -24,7 +24,7 @@
    - Created a script to run the binary classification task using our dataset 
 
 5. **exp_main.py** (done)
-   - Modified the main experiment script to handle binary classification, including changing the loss function to `nn.BCEWithLogitsLoss()` and adjusting the output processing to handle binary labels
+   - Modified the main experiment script to handle binary classification, including changing the loss function to `nn.BCEWithLogitsLoss()`, adjusting the output processing to handle binary labels, and including validation AUC
 
 6. **metrics.py** (done)
    - Implemented metrics for binary classification, including functions for accuracy, precision, recall, F1-score and AUC 
