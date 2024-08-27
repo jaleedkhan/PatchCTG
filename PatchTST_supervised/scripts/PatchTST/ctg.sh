@@ -97,11 +97,12 @@ python -u run_longExp.py \
   --patch_len 16 \
   --stride 8 \
   --des 'Exp' \
-  --train_epochs 200 \
+  --train_epochs 100 \
   --patience 30 \
   --itr 1 \
-  --batch_size 16 \
+  --batch_size 12 \
   --learning_rate 0.0001 \
+  --num_workers 1 \
   --checkpoints ./checkpoints/$model_id_name >logs/CTG/$model_name'_'$model_id_name'_'$seq_len.log
 
 # test

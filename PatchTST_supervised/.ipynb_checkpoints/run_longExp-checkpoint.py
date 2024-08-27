@@ -17,6 +17,8 @@ import numpy as np
 from sklearn.metrics import accuracy_score, f1_score
 import torch.nn as nn
 
+mp.set_sharing_strategy('file_system')
+
 # Set the default tensor type to CUDA
 torch.set_default_tensor_type(torch.cuda.FloatTensor)
 
