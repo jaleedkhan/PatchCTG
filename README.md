@@ -1,12 +1,15 @@
 # [PatchTST](https://github.com/yuqinie98/PatchTST/tree/main/PatchTST_supervised) adapted for binary classification of CTGs 
 
-## Instructions 
+## Instructions to run the adapted PatchTST model for binary CTG classification 
 
-1. Ensure that the CUDA version installed in your environment is compatible with and PyTorch 1.11.0: `conda install pytorch=1.11 torchvision torchaudio cudatoolkit=11.3 -c pytorch` (Tested successfully with this configuration: Ubuntu 22.04, NVIDIA driver version 560.94, CUDA 11.3, Python 3.8, torch 1.11.0+cu113)
-2. Navigate to `patchctg/PatchTST_supervised` and install the required packages in `requirements.txt`.
-3. (Optional) Set hyperparameters for training in `sh scripts/PatchTST/ctg.sh` 
-4. Run `sh scripts/PatchTST/ctg.sh` to train and test the model (training progress is logged at `logs/CTG/`) 
-5. Run the cells in results section in `../results_dataset.ipynb` to check training and testing results 
+1. Create a new directory `~/ctg_dataset` and copy your dataset files, including X.npy, y.npy and clinical_data.csv, to this directory. 
+2. Clone this repository (classification branch): `git clone -b classification https://gitlab.com/oxmat_project/patchctg.git`
+3. Install PyTorch 1.11 if not aleady installed: `conda install pytorch=1.11 torchvision torchaudio cudatoolkit=11.3 -c pytorch`. This repository requires PyTorch 1.11, and have been successfully tested with Ubuntu 22.04, GCC 10.5, NVIDIA driver version 560.35, CUDA 11.3, Python 3.8 and torch 1.11.0+cu113).
+4. Navigate to ~/patchctg/PatchTST_supervised: `cd ~/patchctg/PatchTST_supervised`
+5. Install the required packages: `pip install -r requirements.txt`
+6. (Optional) Set hyperparameters for training in `scripts/PatchTST/ctg.sh`. 
+7. Run `sh scripts/PatchTST/ctg.sh` to train and test the model. Training progress is logged at `~/patchctg/PatchTST_supervised/logs/CTG/`, and the dataset split, results and model checkpoints are saved in `~/patchctg/PatchTST_supervised/jResults`. 
+8. Run all the cells in this notebook to see the dataset statistics, hyperparameters and model results: `~/patchctg/check_results.ipynb` 
 
 ## Updates made in the original repository 
 

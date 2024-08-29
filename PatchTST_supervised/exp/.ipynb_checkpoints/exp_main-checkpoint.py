@@ -384,10 +384,23 @@ class Exp_Main(Exp_Basic):
         # np.save(folder_path + 'x.npy', inputx)
 
         # Save model, settings and results to jResults
-        
-        timestamp = datetime.now().strftime('%Y-%m-%d %H%M')
+        timestamp = datetime.now().strftime('%Y%m%d %H%M')
         results_dir = './jResults/' + timestamp
-        os.makedirs(results_dir, exist_ok=True)
+        existing_dir = None # check for any existing directory with a timestamp within 5 minutes of the current timestamp
+        for subdir in os.listdir('./jResults/'):
+            subdir_path = os.path.join('./jResults/', subdir)
+            if os.path.isdir(subdir_path):
+                try:
+                    subdir_time = datetime.strptime(subdir, '%Y%m%d %H%M')
+                    if abs((subdir_time - datetime.now()).total_seconds()) <= 300:
+                        existing_dir = subdir_path
+                        break
+                except ValueError:
+                    continue
+        if existing_dir:
+            results_dir = existing_dir
+        else:
+            os.makedirs(results_dir, exist_ok=True)
         np.save(os.path.join(results_dir, 'preds.npy'), preds)
         np.save(os.path.join(results_dir, 'trues.npy'), trues)
         shutil.copyfile(os.path.join('./checkpoints/ctg/' + setting, 'checkpoint.pth'), os.path.join(results_dir, 'checkpoint.pth'))
