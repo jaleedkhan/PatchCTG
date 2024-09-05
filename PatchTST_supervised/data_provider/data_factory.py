@@ -18,69 +18,73 @@ data_dict = {
 
 
 def data_provider(args, flag):
+    
     Data = data_dict[args.data]
     
     if args.data == 'CTG':
         # Load CTG dataset
-        try:
-            X = np.load('../../../ctg_dataset/X.npy')
-            y = np.load('../../../ctg_dataset/y.npy')
-            clinical_data = pd.read_csv('../../../ctg_dataset/clinical_data.csv')
-        except:
-            X = np.load('../../ctg_dataset/X.npy')
-            y = np.load('../../ctg_dataset/y.npy')
-            clinical_data = pd.read_csv('../../ctg_dataset/clinical_data.csv')
+        X = np.load('/home/jaleedkhan/ctg_dataset/X.npy')
+        y = np.load('/home/jaleedkhan/ctg_dataset/y.npy')
+        clinical_data = pd.read_csv('/home/jaleedkhan/ctg_dataset/clinical_data_new.csv')
 
-        # # Subset for debugging
+        ## Subset for debugging
         # selected_indices = np.concatenate([np.random.choice(np.where(y == c)[0], 500, replace=False) for c in [0, 1]])
         # X, y = X[selected_indices], y[selected_indices]
+
+        # Adjust FHR to the range [50, 250] and TOCO to the range [0, 100]
+        #X[:,:,0] = 50 + ((X[:,:,0] - np.min(X[:,:,0])) * (250 - 50) / (np.max(X[:,:,0]) - np.min(X[:,:,0])))
+        #X[:,:,1] = (X[:,:,1] - np.min(X[:,:,1])) * (100 - 0) / (np.max(X[:,:,1]) - np.min(X[:,:,1]))
         
         # Split the data into training (80%) and testing/validation (20%) sets
-        #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=args.random_seed)
         X_train, X_test, y_train, y_test, clinical_train, clinical_test = train_test_split(X, y, clinical_data, test_size=0.2, random_state=args.random_seed)
-
-        # Save split dataset for analysis later
-        X_train_list = [x for x in X_train]
-        y_train_list = y_train.tolist()
-        X_test_list = [x for x in X_test]
-        y_test_list = y_test.tolist()
-        clinical_train['input_signals'] = X_train_list
-        clinical_train['label'] = y_train_list
-        clinical_test['input_signals'] = X_test_list
-        clinical_test['label'] = y_test_list
-        timestamp = datetime.now().strftime('%Y%m%d %H%M')
-        results_dir = './jResults/' + timestamp
-        existing_dir = None # check for any existing directory with a timestamp within 5 minutes of the current timestamp
-        for subdir in os.listdir('./jResults/'):
-            subdir_path = os.path.join('./jResults/', subdir)
-            if os.path.isdir(subdir_path):
-                try:
-                    subdir_time = datetime.strptime(subdir, '%Y%m%d %H%M')
-                    if abs((subdir_time - datetime.now()).total_seconds()) <= 300:
-                        existing_dir = subdir_path
-                        break
-                except ValueError:
-                    continue
-        if existing_dir:
-            results_dir = existing_dir
-        else:
-            os.makedirs(results_dir, exist_ok=True)
-        clinical_train.to_csv(os.path.join(results_dir, 'dataset_train.csv'), index=False)
-        clinical_test.to_csv(os.path.join(results_dir, 'dataset_test.csv'), index=False)
         
         if flag == 'train':
+            print('Debug - Train Flag')
             data_set = Data(X_train, y_train)
             shuffle_flag = True
             #drop_last = True
             drop_last = False
             batch_size = args.batch_size
         elif flag in ['val', 'test']:
+            print('Debug - Val/Test Flag')
             data_set = Data(X_test, y_test)
             shuffle_flag = False
             #drop_last = True
             drop_last = False
             batch_size = args.batch_size
+            if flag == 'test':
+                print('Debug - Val/Test - Test Flag')             
+                # Save split dataset for analysis later
+                X_train_list = [x for x in X_train]
+                y_train_list = y_train.tolist()
+                X_test_list = [x for x in X_test]
+                y_test_list = y_test.tolist()
+                clinical_train['input_signals'] = X_train_list
+                clinical_train['label'] = y_train_list
+                clinical_test['input_signals'] = X_test_list
+                clinical_test['label'] = y_test_list
+                timestamp = datetime.now().strftime('%Y%m%d %H%M')
+                results_dir = './jResults/' + timestamp
+                existing_dir = None # check for any existing directory with a timestamp within 5 minutes of the current timestamp
+                for subdir in os.listdir('./jResults/'):
+                    subdir_path = os.path.join('./jResults/', subdir)
+                    if os.path.isdir(subdir_path):
+                        try:
+                            subdir_time = datetime.strptime(subdir, '%Y%m%d %H%M')
+                            if abs((subdir_time - datetime.now()).total_seconds()) <= 300:
+                                existing_dir = subdir_path
+                                break
+                        except ValueError:
+                            continue
+                if existing_dir:
+                    results_dir = existing_dir
+                else:
+                    os.makedirs(results_dir, exist_ok=True)
+                clinical_train.to_csv(os.path.join(results_dir, 'dataset_train.csv'), index=False)
+                clinical_test.to_csv(os.path.join(results_dir, 'dataset_test.csv'), index=False)
+                print('Dataset and results saved to ' + results_dir)
         elif flag == 'pred':
+            print('Debug - Pred Flag')
             shuffle_flag = False
             drop_last = False
             batch_size = 1
@@ -94,7 +98,7 @@ def data_provider(args, flag):
             generator = torch.Generator(device='cuda')
         else:
             generator = torch.Generator()
-
+        
         data_loader = DataLoader(
             data_set,
             batch_size=batch_size,
@@ -103,14 +107,14 @@ def data_provider(args, flag):
             drop_last=drop_last,
             generator=generator  # Pass the generator to the DataLoader
         )
+
         return data_set, data_loader
 
     timeenc = 0 if args.embed != 'timeF' else 1
 
     if flag == 'test':
         shuffle_flag = False
-        #drop_last = True
-        drop_last = False
+        drop_last = True
         batch_size = args.batch_size
         freq = args.freq
     elif flag == 'pred':
@@ -121,8 +125,7 @@ def data_provider(args, flag):
         Data = Dataset_Pred
     else:
         shuffle_flag = True
-        #drop_last = True
-        drop_last = False
+        drop_last = True
         batch_size = args.batch_size
         freq = args.freq
 
@@ -145,6 +148,7 @@ def data_provider(args, flag):
         drop_last=drop_last
     )
     return data_set, data_loader
+
 
 # def data_provider(args, flag):
 #     Data = data_dict[args.data]

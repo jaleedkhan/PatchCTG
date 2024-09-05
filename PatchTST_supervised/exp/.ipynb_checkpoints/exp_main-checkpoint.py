@@ -243,6 +243,9 @@ class Exp_Main(Exp_Basic):
         best_model_path = path + '/' + 'checkpoint.pth'
         self.model.load_state_dict(torch.load(best_model_path))
 
+        # Empty the CUDA cache after training
+        torch.cuda.empty_cache()
+
         return self.model
 
     def test(self, setting, test=0):

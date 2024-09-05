@@ -1,18 +1,26 @@
 Args in experiment:
-Namespace(activation='gelu', affine=0, batch_size=64, c_out=1, checkpoints='./checkpoints/ctg', d_ff=256, d_layers=1, d_model=128, data='CTG', data_path='X.npy', dec_in=2, decomposition=0, des='Exp', devices='0,1,2,3', distil=True, do_predict=False, dropout=0.4, e_layers=3, embed='timeF', embed_type=0, enc_in=2, factor=1, fc_dropout=0.2, features='M', freq='h', gpu=0, head_dropout=0.0, individual=0, is_training=1, itr=1, kernel_size=25, learning_rate=5e-05, loss='cross_entropy', lradj='type3', model='PatchTST', model_id='ctg_960', moving_avg=25, n_heads=16, num_classes=2, num_workers=10, output_attention=False, padding_patch='end', patch_len=16, patience=30, pct_start=0.3, random_seed=2021, revin=1, root_path='./dataset/', seq_len=960, stride=8, subtract_last=0, target='OT', test_flop=False, train_epochs=1, use_amp=False, use_gpu=True, use_multi_gpu=False)
+Namespace(activation='gelu', affine=0, batch_size=64, c_out=1, checkpoints='./checkpoints/ctg', d_ff=256, d_layers=1, d_model=128, data='CTG', data_path='X.npy', dec_in=2, decomposition=0, des='Exp', devices='0,1,2,3', distil=True, do_predict=False, dropout=0.4, e_layers=3, embed='timeF', embed_type=0, enc_in=2, factor=1, fc_dropout=0.2, features='M', freq='h', gpu=0, head_dropout=0.0, individual=0, is_training=1, itr=1, kernel_size=25, learning_rate=5e-05, loss='cross_entropy', lradj='type3', model='PatchTST', model_id='ctg_960', moving_avg=25, n_heads=16, num_classes=2, num_workers=10, output_attention=False, padding_patch='end', patch_len=16, patience=15, pct_start=0.3, random_seed=2021, revin=1, root_path='./dataset/', seq_len=960, stride=8, subtract_last=0, target='OT', test_flop=False, train_epochs=1, use_amp=False, use_gpu=True, use_multi_gpu=False)
 Use GPU: cuda:0
 >>>>>>>start training : ctg_960_PatchTST_CTG_sl960_nc2_dm128_nh16_el3_df256_fc1_Exp>>>>>>>>>>>>>>>>>>>>>>>>>>
+Debug - Train Flag
 train set size: 16471
+Debug - Val/Test Flag
 val set size: 4118
+Debug - Val/Test Flag
+Debug - Val/Test - Test Flag
+Dataset and results saved to ./jResults/20240905 1259
 test set size: 4118
 	iters: 100, epoch: 1 | loss: 0.6932136
-	speed: 0.1875s/iter; left time: 29.8067s
+	speed: 0.1883s/iter; left time: 29.9462s
 	iters: 200, epoch: 1 | loss: 0.6948340
-	speed: 0.0188s/iter; left time: 1.1111s
-Epoch: 1 cost time: 22.69204545021057
+	speed: 0.0188s/iter; left time: 1.1118s
+Epoch: 1 cost time: 22.881223440170288
 Epoch: 1, Steps: 258 | Train Loss: 0.6933519 Vali Loss: 0.6931259 Vali AUC: 0.6077789
 Validation loss decreased (inf --> 0.693126).  Saving model ...
 Updating learning rate to 5e-05
 >>>>>>>testing : ctg_960_PatchTST_CTG_sl960_nc2_dm128_nh16_el3_df256_fc1_Exp<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+Debug - Val/Test Flag
+Debug - Val/Test - Test Flag
+Dataset and results saved to ./jResults/20240905 1259
 test set size: 4118
 accuracy:0.5356969402622632, precision:0.0, recall:0.0, f1:0.0, auc:0.6077788752242836
