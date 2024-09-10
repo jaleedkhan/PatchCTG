@@ -8,7 +8,7 @@ import random
 import numpy as np
 from datetime import datetime
 
-# Set the start method to 'spawn'
+# Use 'spawn' for multiprocessing (compatible with CUDA)
 mp.set_start_method('spawn', force=True)
 
 mp.set_sharing_strategy('file_system')
@@ -49,7 +49,7 @@ def objective(trial):
         dropout = trial.suggest_float('dropout', 0.3, 0.5, step=0.1)
         fc_dropout = trial.suggest_float('fc_dropout', 0.1, 0.3, step=0.1)
         head_dropout = trial.suggest_float('head_dropout', 0.0, 0.2, step=0.1)
-        lr = trial.suggest_loguniform('learning_rate', 1e-6, 1e-3)
+        lr = trial.suggest_loguniform('learning_rate', 1e-7, 1e-4)
         batch_size = trial.suggest_categorical('batch_size', [16, 32, 64])
     
         # Set up experiment with the suggested hyperparameters
@@ -87,7 +87,7 @@ def objective(trial):
             activation='gelu',
             embed='timeF',
             output_attention=False,
-            train_epochs=50,  # Adjust the number of epochs for faster trials
+            train_epochs=50,  
             patience=10,
             itr=1,
             batch_size=batch_size,
@@ -95,12 +95,13 @@ def objective(trial):
             checkpoints='./checkpoints/ctg',
             use_gpu=True,
             gpu=0,
-            use_multi_gpu=False,
-            devices='0',
-            num_workers=10,
+            use_multi_gpu=True,
+            devices='0,1',
+            num_workers=5,
             lradj='type3',
             pct_start=0.3,
-            use_amp=True
+            use_amp=True,
+            is_optuna=True
         )
     
         # Set the random seed
@@ -123,16 +124,28 @@ def objective(trial):
     finally:
         torch.cuda.empty_cache()
 
+def save_csv_callback(study, optuna_dir):
+    def callback(study, trial):
+        study.trials_dataframe().to_csv(f"{optuna_dir}/optuna_study_results.csv", index=False)
+    return callback
+
+
 if __name__ == "__main__":
     # Adjust max_split_size_mb to avoid fragmentation
     os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:128' 
+
+    # Ensure the directory for the SQLite database exists
+    optuna_dir = f"/home/jaleedkhan/patchctg/PatchTST_supervised/jResults/optuna/{datetime.now().strftime('%Y%m%d %H%M')}/"
+    os.makedirs(optuna_dir, exist_ok=True)
     
     # Create an Optuna study to maximize the validation AUC
-    study = optuna.create_study(direction="maximize")
-    study.optimize(objective, n_trials=100)  # Run for 100 trials or adjust as needed
+    study = optuna.create_study(direction="maximize", storage=f"sqlite:///{optuna_dir}/optuna_study_results.db", study_name="patchtst_ctg_study", load_if_exists=True)
+
+    # Run the optimization process
+    study.optimize(objective, n_trials=100, callbacks=[save_csv_callback(study, optuna_dir)])
 
     # Output the best hyperparameters
     print("Best hyperparameters: ", study.best_params)
 
-    # Save the study results
-    study.trials_dataframe().to_csv(f"jResults/optuna_study_results/{datetime.now().strftime('%Y%m%d %H%M')}.csv")
+    # Save the study results at the end
+    study.trials_dataframe().to_csv(f"{optuna_dir}/optuna_study_results_final.csv")

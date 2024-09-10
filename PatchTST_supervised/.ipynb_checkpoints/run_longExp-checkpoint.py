@@ -143,6 +143,8 @@ if __name__ == '__main__':
     parser.add_argument('--devices', type=str, default='0,1,2,3', help='device ids of multile gpus')
     parser.add_argument('--test_flop', action='store_true', default=False, help='See utils/tools for usage')
 
+    parser.add_argument('--is_optuna', type=bool, default=False, help='hyperparameter tuning')
+
     args = parser.parse_args()
 
     # random seed

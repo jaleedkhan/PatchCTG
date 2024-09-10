@@ -19,7 +19,11 @@ class Dataset_CTG(Dataset): # for CTG data
         return len(self.X)
 
     def __getitem__(self, idx):
-        return self.X[idx], self.y[idx]
+        # Ensure that neither X nor y contains None or invalid data
+        if self.X[idx] is None or self.y[idx] is None:
+            raise ValueError(f"Data at index {idx} is invalid.")
+        return torch.tensor(self.X[idx]).float(), torch.tensor(self.y[idx]).float()
+        #return self.X[idx], self.y[idx]
 
 class Dataset_ETT_hour(Dataset):
     def __init__(self, root_path, flag='train', size=None,

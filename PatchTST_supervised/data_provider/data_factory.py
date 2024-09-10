@@ -27,6 +27,9 @@ def data_provider(args, flag):
         y = np.load('/home/jaleedkhan/ctg_dataset/y.npy')
         clinical_data = pd.read_csv('/home/jaleedkhan/ctg_dataset/clinical_data_new.csv')
 
+        if np.isnan(X).any():
+            print("X contains NaN values")
+
         ## Subset for debugging
         # selected_indices = np.concatenate([np.random.choice(np.where(y == c)[0], 500, replace=False) for c in [0, 1]])
         # X, y = X[selected_indices], y[selected_indices]
@@ -39,21 +42,20 @@ def data_provider(args, flag):
         X_train, X_test, y_train, y_test, clinical_train, clinical_test = train_test_split(X, y, clinical_data, test_size=0.2, random_state=args.random_seed)
         
         if flag == 'train':
-            print('Debug - Train Flag')
             data_set = Data(X_train, y_train)
             shuffle_flag = True
             #drop_last = True
             drop_last = False
             batch_size = args.batch_size
+            
         elif flag in ['val', 'test']:
-            print('Debug - Val/Test Flag')
             data_set = Data(X_test, y_test)
             shuffle_flag = False
             #drop_last = True
             drop_last = False
             batch_size = args.batch_size
-            if flag == 'test':
-                print('Debug - Val/Test - Test Flag')             
+            
+            if flag == 'test':            
                 # Save split dataset for analysis later
                 X_train_list = [x for x in X_train]
                 y_train_list = y_train.tolist()
@@ -63,28 +65,31 @@ def data_provider(args, flag):
                 clinical_train['label'] = y_train_list
                 clinical_test['input_signals'] = X_test_list
                 clinical_test['label'] = y_test_list
-                timestamp = datetime.now().strftime('%Y%m%d %H%M')
-                results_dir = './jResults/' + timestamp
-                existing_dir = None # check for any existing directory with a timestamp within 5 minutes of the current timestamp
-                for subdir in os.listdir('./jResults/'):
-                    subdir_path = os.path.join('./jResults/', subdir)
-                    if os.path.isdir(subdir_path):
-                        try:
-                            subdir_time = datetime.strptime(subdir, '%Y%m%d %H%M')
-                            if abs((subdir_time - datetime.now()).total_seconds()) <= 300:
-                                existing_dir = subdir_path
-                                break
-                        except ValueError:
-                            continue
-                if existing_dir:
-                    results_dir = existing_dir
-                else:
-                    os.makedirs(results_dir, exist_ok=True)
+
+                if args.is_optuna:
+                    results_dir = './jResults/optuna'
+                else:    
+                    timestamp = datetime.now().strftime('%Y%m%d %H%M')
+                    results_dir = './jResults/' + timestamp
+                    existing_dir = None # check for any existing directory with a timestamp within 5 minutes of the current timestamp
+                    for subdir in os.listdir('./jResults/'):
+                        subdir_path = os.path.join('./jResults/', subdir)
+                        if os.path.isdir(subdir_path):
+                            try:
+                                subdir_time = datetime.strptime(subdir, '%Y%m%d %H%M')
+                                if abs((subdir_time - datetime.now()).total_seconds()) <= 300:
+                                    existing_dir = subdir_path
+                                    break
+                            except ValueError:
+                                continue
+                    if existing_dir:
+                        results_dir = existing_dir
+                    else:
+                        os.makedirs(results_dir, exist_ok=True)
                 clinical_train.to_csv(os.path.join(results_dir, 'dataset_train.csv'), index=False)
                 clinical_test.to_csv(os.path.join(results_dir, 'dataset_test.csv'), index=False)
-                print('Dataset and results saved to ' + results_dir)
+                print('Dataset saved to ' + results_dir)
         elif flag == 'pred':
-            print('Debug - Pred Flag')
             shuffle_flag = False
             drop_last = False
             batch_size = 1

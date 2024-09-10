@@ -40,7 +40,8 @@ class Exp_Main(Exp_Basic):
         # model = model_dict[self.args.model].Model(self.args, num_classes=self.args.num_classes).float()
 
         if self.args.use_multi_gpu and self.args.use_gpu:
-            model = nn.DataParallel(model, device_ids=self.args.device_ids)
+            model = nn.DataParallel(model, device_ids=[int(id_) for id_ in self.args.devices.split(',')])
+            #model = nn.DataParallel(model, device_ids=self.args.device_ids)
         return model
 
     def _get_data(self, flag):
@@ -64,8 +65,11 @@ class Exp_Main(Exp_Basic):
         with torch.no_grad():
             #for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(vali_loader):
             for i, (batch_x, batch_y) in enumerate(vali_loader):
-                batch_x = batch_x.float().to(self.device)
-                batch_y = batch_y.float()
+
+                # Move data to GPU here
+                batch_x = batch_x.to(self.device)
+                #batch_x = batch_x.float().to(self.device)
+                #batch_y = batch_y.float()
 
                 #batch_x_mark = batch_x_mark.float().to(self.device)
                 #batch_y_mark = batch_y_mark.float().to(self.device)
@@ -110,6 +114,11 @@ class Exp_Main(Exp_Basic):
 
                 # total_loss.append(loss)
         total_loss = np.average(total_loss)
+        # Check for NaN in predictions or ground truth
+        if np.isnan(all_trues).any():
+            print("Ground truth contains NaN values")
+        if np.isnan(all_preds).any():
+            print("Predictions contain NaN values")
         auc = roc_auc_score(all_trues, all_preds)
         self.model.train()
         return total_loss, auc
@@ -148,11 +157,16 @@ class Exp_Main(Exp_Basic):
             epoch_time = time.time()
             #for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(train_loader):
             for i, (batch_x, batch_y) in enumerate(train_loader):
+                
                 iter_count += 1
                 model_optim.zero_grad()
-                batch_x = batch_x.float().to(self.device)
 
-                batch_y = batch_y.float().to(self.device)
+                # Move data to GPU here
+                batch_x = batch_x.to(self.device)
+                batch_y = batch_y.to(self.device)
+                #batch_x = batch_x.float().to(self.device)
+                #batch_y = batch_y.float().to(self.device)
+                
                 #batch_x_mark = batch_x_mark.float().to(self.device)
                 #batch_y_mark = batch_y_mark.float().to(self.device)
 
@@ -170,6 +184,10 @@ class Exp_Main(Exp_Basic):
                     outputs = self.model(batch_x).squeeze()
                     loss = criterion(outputs, batch_y)
                     train_loss.append(loss.item())
+
+                if torch.isnan(loss).any():
+                    print("NaN detected in loss. Stopping trial.")
+                    return float('nan')
 
                 # if self.args.use_amp:
                 #     with torch.cuda.amp.autocast():
@@ -212,10 +230,12 @@ class Exp_Main(Exp_Basic):
 
                 if self.args.use_amp:
                     scaler.scale(loss).backward()
+                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)  # Gradient Clipping
                     scaler.step(model_optim)
                     scaler.update()
                 else:
                     loss.backward()
+                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)  # Gradient Clipping
                     model_optim.step()
                     
                 if self.args.lradj == 'TST':
