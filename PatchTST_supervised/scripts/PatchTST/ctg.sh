@@ -74,7 +74,38 @@ fi
 #   --batch_size 128 \
 #   --checkpoints ./checkpoints/$model_id_name >logs/CTG/$model_name'_'$model_id_name'_'$seq_len'_test.log'
 
-# train-test
+# # train-test (defaults)
+# python -u run_longExp.py \
+#   --random_seed $random_seed \
+#   --is_training 1 \
+#   --root_path $root_path_name \
+#   --data_path $data_path_name \
+#   --model_id $model_id_name'_'$seq_len \
+#   --model $model_name \
+#   --data $data_name \
+#   --features M \
+#   --seq_len $seq_len \
+#   --enc_in 2 \
+#   --num_classes 2 \
+#   --e_layers 3 \
+#   --n_heads 16 \
+#   --d_model 128 \
+#   --d_ff 256 \
+#   --dropout 0.4 \
+#   --fc_dropout 0.2 \
+#   --head_dropout 0 \
+#   --patch_len 16 \
+#   --stride 8 \
+#   --des 'Exp' \
+#   --train_epochs 100 \
+#   --patience 15 \
+#   --itr 1 \
+#   --batch_size 64 \
+#   --learning_rate 0.00005 \
+#   --checkpoints ./checkpoints/$model_id_name >logs/CTG/$model_name'_'$model_id_name'_'$seq_len.log
+
+
+# train-test (trial #45 0.7754)
 python -u run_longExp.py \
   --random_seed $random_seed \
   --is_training 1 \
@@ -87,21 +118,21 @@ python -u run_longExp.py \
   --seq_len $seq_len \
   --enc_in 2 \
   --num_classes 2 \
-  --e_layers 3 \
-  --n_heads 16 \
+  --e_layers 4 \
+  --n_heads 8 \
   --d_model 128 \
-  --d_ff 256 \
-  --dropout 0.4 \
-  --fc_dropout 0.2 \
-  --head_dropout 0 \
+  --d_ff 128 \
+  --dropout 0.3 \
+  --fc_dropout 0.3 \
+  --head_dropout 0.1 \
   --patch_len 16 \
   --stride 8 \
   --des 'Exp' \
-  --train_epochs 1 \
+  --train_epochs 50 \
   --patience 15 \
   --itr 1 \
-  --batch_size 64 \
-  --learning_rate 0.00005 \
+  --batch_size 16 \
+  --learning_rate 6.99e-05 \
   --checkpoints ./checkpoints/$model_id_name >logs/CTG/$model_name'_'$model_id_name'_'$seq_len.log
 
 
