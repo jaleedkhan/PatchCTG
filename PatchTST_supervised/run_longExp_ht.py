@@ -1,3 +1,6 @@
+# To resume an on-going tuning experiment:
+# python run_longExp_ht.py --resume /home/jaleedkhan/patchctg/PatchTST_supervised/jResults/optuna/20240909\ 1452/
+
 import optuna
 import argparse
 import os
@@ -7,6 +10,9 @@ from exp.exp_main import Exp_Main
 import random
 import numpy as np
 from datetime import datetime
+import sys
+sys.path.append('/home/jaleedkhan/patchctg/')
+from jDataResultsAnalysis import explore_optuna_results
 
 # Use 'spawn' for multiprocessing (compatible with CUDA)
 mp.set_start_method('spawn', force=True)
@@ -39,18 +45,16 @@ torch.nn.Module.__init__ = new_init
 def objective(trial):
     try:
         # Suggest hyperparameters for optimization
-        e_layers = trial.suggest_int('e_layers', 2, 4)
-        #n_heads = trial.suggest_categorical('n_heads', [8, 16, 32])
-        #d_model = trial.suggest_int('d_model', 64, 256, step=64) # should be divisible by n_heads
-        #d_ff = trial.suggest_int('d_ff', 128, 512, step=128)
-        n_heads = trial.suggest_categorical('n_heads', [2, 4, 8, 16]) 
-        d_model = trial.suggest_categorical('d_model', [16, 64, 128]) 
-        d_ff = trial.suggest_categorical('d_ff', [64, 128, 256]) 
-        dropout = trial.suggest_float('dropout', 0.3, 0.5, step=0.1)
-        fc_dropout = trial.suggest_float('fc_dropout', 0.1, 0.3, step=0.1)
+        e_layers = trial.suggest_int('e_layers', 3, 6)
+        n_heads = trial.suggest_categorical('n_heads', [8, 16, 32]) 
+        d_model = trial.suggest_categorical('d_model', [64, 128, 192, 256]) #* # should be divisible by n_heads
+        d_ff = trial.suggest_categorical('d_ff', [128, 192, 256, 320]) #*
+        dropout = trial.suggest_float('dropout', 0.1, 0.5, step=0.1) 
+        fc_dropout = trial.suggest_float('fc_dropout', 0.1, 0.5, step=0.1)
         head_dropout = trial.suggest_float('head_dropout', 0.0, 0.2, step=0.1)
-        lr = trial.suggest_loguniform('learning_rate', 1e-7, 1e-4)
-        batch_size = trial.suggest_categorical('batch_size', [16, 32, 64])
+        lr = trial.suggest_categorical('learning_rate', [1e-7, 5e-7, 1e-6, 5e-6, 1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3])
+        batch_size = trial.suggest_categorical('batch_size', [16, 32, 48, 64])
+        # patch_len 4, 8, 16 
     
         # Set up experiment with the suggested hyperparameters
         args = argparse.Namespace(
@@ -97,7 +101,7 @@ def objective(trial):
             gpu=0,
             use_multi_gpu=True,
             devices='0,1',
-            num_workers=5,
+            num_workers=2,
             lradj='type3',
             pct_start=0.3,
             use_amp=True,
@@ -122,7 +126,7 @@ def objective(trial):
         return val_auc
     
     finally:
-        torch.cuda.empty_cache()
+        torch.cuda.empty_cache() # Clear CUDA cache after every trial
 
 def save_csv_callback(study, optuna_dir):
     def callback(study, trial):
@@ -131,14 +135,22 @@ def save_csv_callback(study, optuna_dir):
 
 
 if __name__ == "__main__":
-    # Adjust max_split_size_mb to avoid fragmentation
-    os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:128' 
+    parser = argparse.ArgumentParser(description="Optuna Hyperparameter Tuning")
+    parser.add_argument('--resume', type=str, help="Path to existing optuna directory to resume from, else leave empty to start new.")
+    args = parser.parse_args()
 
-    # Ensure the directory for the SQLite database exists
-    optuna_dir = f"/home/jaleedkhan/patchctg/PatchTST_supervised/jResults/optuna/{datetime.now().strftime('%Y%m%d %H%M')}/"
-    os.makedirs(optuna_dir, exist_ok=True)
-    
-    # Create an Optuna study to maximize the validation AUC
+    # Adjust max_split_size_mb to avoid fragmentation
+    os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:128'
+
+    # Check if resuming or starting a new study
+    if args.resume:
+        optuna_dir = args.resume
+        print(f"Resuming from {optuna_dir}")
+    else:
+        optuna_dir = f"/home/jaleedkhan/patchctg/PatchTST_supervised/jResults/optuna/{datetime.now().strftime('%Y%m%d %H%M')}/"
+        os.makedirs(optuna_dir, exist_ok=True)
+
+    # Create or load the Optuna study
     study = optuna.create_study(direction="maximize", storage=f"sqlite:///{optuna_dir}/optuna_study_results.db", study_name="patchtst_ctg_study", load_if_exists=True)
 
     # Run the optimization process
@@ -149,3 +161,10 @@ if __name__ == "__main__":
 
     # Save the study results at the end
     study.trials_dataframe().to_csv(f"{optuna_dir}/optuna_study_results_final.csv")
+
+    # Generate and save plots using explore_optuna_results
+    explore_optuna_results(
+        study_name="patchtst_ctg_study",
+        sqlite_path=f"{optuna_dir}/optuna_study_results.db"
+    )
+

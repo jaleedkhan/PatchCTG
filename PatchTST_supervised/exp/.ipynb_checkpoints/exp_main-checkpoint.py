@@ -116,11 +116,14 @@ class Exp_Main(Exp_Basic):
         total_loss = np.average(total_loss)
         # Check for NaN in predictions or ground truth
         if np.isnan(all_trues).any():
-            print("Ground truth contains NaN values")
+            print("Ground truth contains NaN values. Stopping trial.")
+            return float('nan'), float('nan')
         if np.isnan(all_preds).any():
-            print("Predictions contain NaN values")
+            print("Predictions contain NaN values. Stopping trial.")
+            return float('nan'), float('nan')
         auc = roc_auc_score(all_trues, all_preds)
         self.model.train()
+        torch.cuda.empty_cache()  # Clear cache after validation
         return total_loss, auc
 
     def train(self, setting):
