@@ -1,0 +1,20 @@
+Args in experiment:
+Namespace(activation='gelu', affine=0, batch_size=32, c_out=1, checkpoints='./checkpoints/ctg', d_ff=640, d_layers=1, d_model=128, data='CTG', dataset_path='../ctg_dataset/Dataset with Folds/model_datasets/fold_0', dec_in=2, decomposition=0, des='Exp', devices='0,1,2,3', distil=True, do_predict=False, dropout=0.2, e_layers=4, embed='timeF', embed_type=0, enc_in=2, factor=1, fc_dropout=0.1, features='M', freq='h', gpu=0, head_dropout=0.1, individual=0, is_optuna=False, is_training=1, itr=1, kernel_size=25, learning_rate=0.0001, loss='cross_entropy', lradj='type3', model='PatchTST', model_id='ctg_960', moving_avg=25, n_heads=8, num_classes=2, num_workers=10, output_attention=False, padding_patch='end', patch_len=8, patience=15, pct_start=0.3, random_seed=2021, revin=1, root_path='./dataset/', seq_len=960, stride=8, subtract_last=0, target='OT', test_flop=False, train_epochs=1, use_amp=False, use_gpu=True, use_multi_gpu=False)
+Use GPU: cuda:0
+>>>>>>>start training : ctg_960_PatchTST_CTG_sl960_nc2_dm128_nh8_el4_df640_fc1_Exp>>>>>>>>>>>>>>>>>>>>>>>>>>
+train set size: 9682
+val set size: 1074
+test set size: 1074
+	iters: 100, epoch: 1 | loss: 0.7206421
+	speed: 0.1693s/iter; left time: 34.5434s
+	iters: 200, epoch: 1 | loss: 0.7189753
+	speed: 0.0183s/iter; left time: 1.9022s
+	iters: 300, epoch: 1 | loss: 0.7047569
+	speed: 0.0178s/iter; left time: 0.0710s
+Epoch: 1 cost time: 21.63874864578247
+Epoch: 1, Steps: 303 | Train Loss: 0.7201065 Vali Loss: 0.7198713 Vali AUC: 0.4939661
+Validation loss decreased (inf --> 0.719871).  Saving model ...
+Updating learning rate to 0.0001
+>>>>>>>testing : ctg_960_PatchTST_CTG_sl960_nc2_dm128_nh8_el4_df640_fc1_Exp<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+test set size: 1074
+Accuracy: 0.5176908752327747, AUC: 0.4939660643134318, Sensitivity: 0.36312849162011174, Specificity: 0.6722532588454376, PPV: 0.5256064690026954, NPV: 0.5135135135135135, F1: 0.4295154185022026

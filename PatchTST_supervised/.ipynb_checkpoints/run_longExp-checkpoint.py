@@ -59,8 +59,9 @@ if __name__ == '__main__':
 
     # data loader
     parser.add_argument('--data', type=str, required=True, default='CTG', help='dataset type')
-    parser.add_argument('--root_path', type=str, default='./data/CTG/', help='root path of the data file')
-    parser.add_argument('--data_path', type=str, default='X.npy', help='data file')
+    parser.add_argument('--root_path', type=str, default='./ctg_dataset/', help='root path of the data file')
+    #parser.add_argument('--data_path', type=str, default='X.npy', help='data file')
+    parser.add_argument('--dataset_path', type=str, required=True, help='path to the dataset directory containing the fold')
     #parser.add_argument('--data', type=str, required=True, default='ETTm1', help='dataset type')
     #parser.add_argument('--root_path', type=str, default='./data/ETT/', help='root path of the data file')
     #parser.add_argument('--data_path', type=str, default='ETTh1.csv', help='data file')

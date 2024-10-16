@@ -1,5 +1,5 @@
-# To resume an on-going tuning experiment:
-# python run_longExp_ht.py --resume /home/jaleedkhan/patchctg/PatchTST_supervised/jResults/optuna/20240909\ 1452/
+# To resume an on-going tuning experiment: python run_longExp_ht.py --resume /home/jaleedkhan/patchctg/PatchTST_supervised/jResults/optuna/20240909\ 1452/
+# To run, python run_longExp_ht.py --dataset "../ctg_dataset/Old Dataset"
 
 import optuna
 import argparse
@@ -11,7 +11,7 @@ import random
 import numpy as np
 from datetime import datetime
 import sys
-sys.path.append('/home/jaleedkhan/patchctg/')
+sys.path.append('..')
 from jDataResultsAnalysis import explore_optuna_results
 
 # Use 'spawn' for multiprocessing (compatible with CUDA)
@@ -45,16 +45,43 @@ torch.nn.Module.__init__ = new_init
 def objective(trial):
     try:
         # Suggest hyperparameters for optimization
+
         e_layers = trial.suggest_int('e_layers', 3, 6)
-        n_heads = trial.suggest_categorical('n_heads', [8, 16, 32]) 
-        d_model = trial.suggest_categorical('d_model', [64, 128, 192, 256]) #* # should be divisible by n_heads
-        d_ff = trial.suggest_categorical('d_ff', [128, 192, 256, 320]) #*
+        n_heads = trial.suggest_categorical('n_heads', [4, 8, 16, 32]) 
+        d_model = trial.suggest_categorical('d_model', [64, 128, 256, 512, 640, 768]) #* # should be divisible by n_heads
+        d_ff = trial.suggest_categorical('d_ff', [128, 256, 384, 512, 640, 768]) 
         dropout = trial.suggest_float('dropout', 0.1, 0.5, step=0.1) 
         fc_dropout = trial.suggest_float('fc_dropout', 0.1, 0.5, step=0.1)
-        head_dropout = trial.suggest_float('head_dropout', 0.0, 0.2, step=0.1)
-        lr = trial.suggest_categorical('learning_rate', [1e-7, 5e-7, 1e-6, 5e-6, 1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3])
+        head_dropout = trial.suggest_float('head_dropout', 0.1, 0.5, step=0.1)
+        lr = trial.suggest_categorical('learning_rate', [1e-6, 5e-6, 1e-5, 5e-5, 1e-4, 5e-4, 1e-3])
         batch_size = trial.suggest_categorical('batch_size', [16, 32, 48, 64])
-        # patch_len 4, 8, 16 
+        
+        patch_len = trial.suggest_categorical('patch_len', [4, 8, 16, 32])
+        stride = trial.suggest_categorical('stride', [4, 8, 16])
+        kernel_size = trial.suggest_categorical('kernel_size', [15, 25, 31])
+        embed_type = 0
+        decomposition = 0
+        distil = True
+        revin = 1
+        activation = trial.suggest_categorical('activation', ['relu', 'gelu','elu'])
+        
+        # e_layers = trial.suggest_int('e_layers', 3, 5)
+        # n_heads = trial.suggest_categorical('n_heads', [8, 16, 32]) 
+        # d_model = trial.suggest_categorical('d_model', [64, 128, 192, 256, 384, 512]) #* # should be divisible by n_heads
+        # d_ff = trial.suggest_categorical('d_ff', [128, 256, 320, 384, 512, 640]) #*
+        # dropout = trial.suggest_float('dropout', 0.1, 0.5, step=0.1) 
+        # fc_dropout = trial.suggest_float('fc_dropout', 0.1, 0.5, step=0.1)
+        # head_dropout = trial.suggest_float('head_dropout', 0.0, 0.2, step=0.1)
+        # lr = trial.suggest_categorical('learning_rate', [1e-6, 5e-6, 1e-5, 5e-5, 1e-4, 5e-4, 1e-3])
+        # batch_size = trial.suggest_categorical('batch_size', [16, 32, 48, 64])
+        
+        # patch_len = trial.suggest_categorical('patch_len', [4, 8, 16])
+        # stride = trial.suggest_categorical('stride', [4, 8, 16])
+        # kernel_size = trial.suggest_categorical('kernel_size', [15, 25, 31])
+        # embed_type = trial.suggest_categorical('embed_type', [0, 1, 2, 3, 4])
+        # decomposition = 0
+        # distil = trial.suggest_categorical('distil', [True, False])
+        # activation = trial.suggest_categorical('activation', ['relu', 'gelu', 'elu'])
     
         # Set up experiment with the suggested hyperparameters
         args = argparse.Namespace(
@@ -65,6 +92,7 @@ def objective(trial):
             data='CTG',
             root_path='./dataset/',
             data_path='X.npy',
+            dataset_path=dataset_path,  
             features='M',
             seq_len=960,
             enc_in=2,
@@ -73,25 +101,25 @@ def objective(trial):
             n_heads=n_heads,
             d_model=d_model,
             d_ff=d_ff,
+            revin=revin,
             dropout=dropout,
             fc_dropout=fc_dropout,
             head_dropout=head_dropout,
-            patch_len=16,
-            stride=8,
+            patch_len=patch_len,
+            stride=stride,
             padding_patch='end',
-            revin=1,
             affine=0,
             subtract_last=0,
-            decomposition=0,
-            kernel_size=25,
+            decomposition=decomposition,
+            kernel_size=kernel_size,
             individual=0,
-            embed_type=0,
+            embed_type=embed_type,
             c_out=1,
-            distil=True,
-            activation='gelu',
+            distil=distil,
+            activation=activation,
             embed='timeF',
             output_attention=False,
-            train_epochs=50,  
+            train_epochs=60,  
             patience=10,
             itr=1,
             batch_size=batch_size,
@@ -137,7 +165,9 @@ def save_csv_callback(study, optuna_dir):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Optuna Hyperparameter Tuning")
     parser.add_argument('--resume', type=str, help="Path to existing optuna directory to resume from, else leave empty to start new.")
+    parser.add_argument('--dataset', type=str, required=True, help="Path to the dataset directory.")
     args = parser.parse_args()
+    dataset_path = args.dataset
 
     # Adjust max_split_size_mb to avoid fragmentation
     os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:128'
@@ -147,7 +177,8 @@ if __name__ == "__main__":
         optuna_dir = args.resume
         print(f"Resuming from {optuna_dir}")
     else:
-        optuna_dir = f"/home/jaleedkhan/patchctg/PatchTST_supervised/jResults/optuna/{datetime.now().strftime('%Y%m%d %H%M')}/"
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M')
+        optuna_dir = os.path.join(args.dataset, "optuna", timestamp)
         os.makedirs(optuna_dir, exist_ok=True)
 
     # Create or load the Optuna study

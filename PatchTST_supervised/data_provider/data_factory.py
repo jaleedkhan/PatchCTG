@@ -16,6 +16,10 @@ data_dict = {
     'CTG': Dataset_CTG,
 }
 
+def min_max_normalize(signal, min_value, max_value):
+    valid_mask = signal != -1 # Create a mask for non-missing values (-1 are missing values)
+    signal[valid_mask] = (signal[valid_mask] - min_value) / (max_value - min_value) # Apply normalization only to valid values
+    return signal
 
 def data_provider(args, flag):
     
@@ -23,12 +27,41 @@ def data_provider(args, flag):
     
     if args.data == 'CTG':
         # Load CTG dataset
-        X = np.load('/home/jaleedkhan/ctg_dataset/X.npy')
-        y = np.load('/home/jaleedkhan/ctg_dataset/y.npy')
-        clinical_data = pd.read_csv('/home/jaleedkhan/ctg_dataset/clinical_data_new.csv')
+        # X = np.load('/home/jaleedkhan/ctg_dataset/X.npy')
+        # y = np.load('/home/jaleedkhan/ctg_dataset/y.npy')
+        # clinical_data = pd.read_csv('/home/jaleedkhan/ctg_dataset/clinical_data_new.csv')        
 
-        if np.isnan(X).any():
-            print("X contains NaN values")
+        # if np.isnan(X).any():
+        #     print("X contains NaN values")
+
+        X_train_fhr = np.load(os.path.join(args.dataset_path, 'X_train_fhr.npy'))
+        X_train_toco = np.load(os.path.join(args.dataset_path, 'X_train_toco.npy'))
+        y_train = np.load(os.path.join(args.dataset_path, 'y_train.npy'))
+        clinical_train = pd.read_csv(os.path.join(args.dataset_path, 'clinical_train.csv'))
+        X_val_fhr = np.load(os.path.join(args.dataset_path, 'X_val_fhr.npy'))
+        X_val_toco = np.load(os.path.join(args.dataset_path, 'X_val_toco.npy'))
+        y_val = np.load(os.path.join(args.dataset_path, 'y_val.npy'))
+        clinical_val = pd.read_csv(os.path.join(args.dataset_path, 'clinical_val.csv'))
+
+        # Adjust values (ignore -1)
+        X_train_fhr = np.where((X_train_fhr != -1) & (X_train_fhr < 50.0), 50.0, X_train_fhr)
+        X_train_fhr = np.where((X_train_fhr != -1) & (X_train_fhr > 240.0), 240.0, X_train_fhr)
+        X_val_fhr = np.where((X_val_fhr != -1) & (X_val_fhr < 50.0), 50.0, X_val_fhr)
+        X_val_fhr = np.where((X_val_fhr != -1) & (X_val_fhr > 240.0), 240.0, X_val_fhr)
+        X_train_toco = np.where((X_train_toco != -1) & (X_train_toco > 100.0), 100.0, X_train_toco)
+        X_val_toco = np.where((X_val_toco != -1) & (X_val_toco > 100.0), 100.0, X_val_toco)
+
+        # Normalize using min-max normalization (ignoring -1)
+        X_train_fhr = min_max_normalize(X_train_fhr, 50.0, 240.0)
+        X_val_fhr = min_max_normalize(X_val_fhr, 50.0, 240.0)
+        X_train_toco = min_max_normalize(X_train_toco, 0.0, 100.0)
+        X_val_toco = min_max_normalize(X_val_toco, 0.0, 100.0)   
+
+        # Merge FHR and TOCO into a single array with shape (N, 960, 2) 
+        X_train = np.stack((X_train_fhr, X_train_toco), axis=-1)  
+        X_val = np.stack((X_val_fhr, X_val_toco), axis=-1)
+
+        print('Dataset loaded and preprocessed.')
 
         ## Subset for debugging
         # selected_indices = np.concatenate([np.random.choice(np.where(y == c)[0], 500, replace=False) for c in [0, 1]])
@@ -39,7 +72,7 @@ def data_provider(args, flag):
         #X[:,:,1] = (X[:,:,1] - np.min(X[:,:,1])) * (100 - 0) / (np.max(X[:,:,1]) - np.min(X[:,:,1]))
         
         # Split the data into training (80%) and testing/validation (20%) sets
-        X_train, X_test, y_train, y_test, clinical_train, clinical_test = train_test_split(X, y, clinical_data, test_size=0.2, random_state=args.random_seed)
+        # X_train, X_test, y_train, y_test, clinical_train, clinical_test = train_test_split(X, y, clinical_data, test_size=0.2, random_state=args.random_seed)
         
         if flag == 'train':
             data_set = Data(X_train, y_train)
@@ -49,46 +82,48 @@ def data_provider(args, flag):
             batch_size = args.batch_size
             
         elif flag in ['val', 'test']:
-            data_set = Data(X_test, y_test)
+            #data_set = Data(X_test, y_test)
+            data_set = Data(X_val, y_val)
             shuffle_flag = False
             #drop_last = True
             drop_last = False
             batch_size = args.batch_size
             
-            if flag == 'test':            
-                # Save split dataset for analysis later
-                X_train_list = [x for x in X_train]
-                y_train_list = y_train.tolist()
-                X_test_list = [x for x in X_test]
-                y_test_list = y_test.tolist()
-                clinical_train['input_signals'] = X_train_list
-                clinical_train['label'] = y_train_list
-                clinical_test['input_signals'] = X_test_list
-                clinical_test['label'] = y_test_list
+            # if flag == 'test':            
+            #     # Save split dataset for analysis later
+            #     X_train_list = [x for x in X_train]
+            #     y_train_list = y_train.tolist()
+            #     X_test_list = [x for x in X_test]
+            #     y_test_list = y_test.tolist()
+            #     clinical_train['input_signals'] = X_train_list
+            #     clinical_train['label'] = y_train_list
+            #     clinical_test['input_signals'] = X_test_list
+            #     clinical_test['label'] = y_test_list
 
-                if args.is_optuna:
-                    results_dir = './jResults/optuna'
-                else:    
-                    timestamp = datetime.now().strftime('%Y%m%d %H%M')
-                    results_dir = './jResults/' + timestamp
-                    existing_dir = None # check for any existing directory with a timestamp within 5 minutes of the current timestamp
-                    for subdir in os.listdir('./jResults/'):
-                        subdir_path = os.path.join('./jResults/', subdir)
-                        if os.path.isdir(subdir_path):
-                            try:
-                                subdir_time = datetime.strptime(subdir, '%Y%m%d %H%M')
-                                if abs((subdir_time - datetime.now()).total_seconds()) <= 300:
-                                    existing_dir = subdir_path
-                                    break
-                            except ValueError:
-                                continue
-                    if existing_dir:
-                        results_dir = existing_dir
-                    else:
-                        os.makedirs(results_dir, exist_ok=True)
-                clinical_train.to_csv(os.path.join(results_dir, 'dataset_train.csv'), index=False)
-                clinical_test.to_csv(os.path.join(results_dir, 'dataset_test.csv'), index=False)
-                print('Dataset saved to ' + results_dir)
+            #     if args.is_optuna:
+            #         results_dir = './jResults/optuna'
+            #     else:    
+            #         timestamp = datetime.now().strftime('%Y%m%d %H%M')
+            #         results_dir = './jResults/' + timestamp
+            #         existing_dir = None # check for any existing directory with a timestamp within 5 minutes of the current timestamp
+            #         for subdir in os.listdir('./jResults/'):
+            #             subdir_path = os.path.join('./jResults/', subdir)
+            #             if os.path.isdir(subdir_path):
+            #                 try:
+            #                     subdir_time = datetime.strptime(subdir, '%Y%m%d %H%M')
+            #                     if abs((subdir_time - datetime.now()).total_seconds()) <= 300:
+            #                         existing_dir = subdir_path
+            #                         break
+            #                 except ValueError:
+            #                     continue
+            #         if existing_dir:
+            #             results_dir = existing_dir
+            #         else:
+            #             os.makedirs(results_dir, exist_ok=True)
+            #     clinical_train.to_csv(os.path.join(results_dir, 'dataset_train.csv'), index=False)
+            #     clinical_test.to_csv(os.path.join(results_dir, 'dataset_test.csv'), index=False)
+            #     print('Dataset saved to ' + results_dir)
+        
         elif flag == 'pred':
             shuffle_flag = False
             drop_last = False

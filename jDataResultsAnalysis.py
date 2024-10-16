@@ -39,7 +39,7 @@ def explore_optuna_results(study_name, sqlite_path):
     max_trial_number = trial_numbers[max_index]
     
     plt.scatter(max_trial_number, max_value, edgecolor='black', s=100, zorder=5)
-    plt.text(max_trial_number, max_value+0.0075, f'{max_value:.4f}', fontsize=10, verticalalignment='bottom')
+    plt.text(max_trial_number, max_value + 0.0075, f'{max_value:.4f}', fontsize=10, verticalalignment='bottom')
     
     # Set y-axis limits with some padding
     min_val = min(values)
@@ -47,7 +47,7 @@ def explore_optuna_results(study_name, sqlite_path):
     ymin = round(min_val - 0.05, 1)  # Round down and add some space
     ymax = round(max_val + 0.1, 1)  # Round up and add some space
     plt.ylim(ymin, ymax)
-    plt.xlim(0,len(trials))
+    plt.xlim(0, len(trials))
     
     plt.xlabel('Trial')
     plt.ylabel('Validation AUC')
@@ -59,7 +59,7 @@ def explore_optuna_results(study_name, sqlite_path):
     plt.close()
     
     print(f"Optimization history plot saved to: {history_plot_path}")
-
+    
     # 2. Parallel Coordinate Plot
     
     # Extract parameter names and prepare data
@@ -79,16 +79,19 @@ def explore_optuna_results(study_name, sqlite_path):
     df = pd.DataFrame(param_values)
     df['Validation AUC'] = objectives
     
+    # Convert learning_rate, activation, distil, and embed_type to string for plotting and sort them
+    df['learning_rate'] = df['learning_rate'].apply(lambda x: f'{x:.1e}')
+    unique_lr_values = sorted(df['learning_rate'].unique(), key=lambda x: float(x))
+    
+    df['activation'] = df['activation'].astype(str)
+    unique_activation_values = sorted(df['activation'].unique())
+    
     # Sort the DataFrame by 'Validation AUC' in descending order
     df = df.sort_values(by='Validation AUC', ascending=False)
     
     # Determine the min and max of the Validation AUC for the color scale
     min_auc = df['Validation AUC'].min()
     max_auc = df['Validation AUC'].max()
-    
-    # Convert learning_rate to string for plotting and sort it
-    df['learning_rate'] = df['learning_rate'].apply(lambda x: f'{x:.1e}')
-    unique_lr_values = sorted(df['learning_rate'].unique(), key=lambda x: float(x))
     
     # Create dimensions for parallel coordinates
     dimensions = []
@@ -103,12 +106,22 @@ def explore_optuna_results(study_name, sqlite_path):
                     range=[0, len(unique_lr_values) - 1]
                 )
             )
+        elif param == 'activation':
+            dimensions.append(
+                dict(
+                    label='activation', 
+                    values=[unique_activation_values.index(val) for val in df['activation']],
+                    tickvals=list(range(len(unique_activation_values))),
+                    ticktext=unique_activation_values,
+                    range=[0, len(unique_activation_values) - 1]
+                )
+            )
         else:
             dimensions.append(dict(label=param, values=df[param]))
-
+    
     # Add Validation AUC as the last dimension
     dimensions.append(dict(label='Validation AUC', values=df['Validation AUC']))
-
+    
     # Create the parallel coordinates plot using Plotly
     fig = go.Figure(data=
         go.Parcoords(
@@ -128,6 +141,7 @@ def explore_optuna_results(study_name, sqlite_path):
     fig.write_html(parallel_coordinates_path)
     
     print(f"Parallel coordinates plot saved to: {parallel_coordinates_path}")
+
     
     # # 3. Hyperparameter Importance Plot
     

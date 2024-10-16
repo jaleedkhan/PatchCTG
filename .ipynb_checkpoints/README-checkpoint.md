@@ -2,16 +2,21 @@
 
 ## Instructions to run the adapted PatchTST model for binary CTG classification 
 
-1. Create a new directory `~/ctg_dataset` and copy your dataset files, including X.npy, y.npy and clinical_data.csv, to this directory. 
-2. Clone this repository (classification branch): `git clone -b classification https://gitlab.com/oxmat_project/patchctg.git`
-3. Install PyTorch 1.11 if not aleady installed: `conda install pytorch=1.11 torchvision torchaudio cudatoolkit=11.3 -c pytorch`. This repository requires PyTorch 1.11, and have been successfully tested with Ubuntu 22.04, GCC 10.5, NVIDIA driver version 560.35, CUDA 11.3, Python 3.8 and torch 1.11.0+cu113).
-4. Navigate to ~/patchctg/PatchTST_supervised: `cd ~/patchctg/PatchTST_supervised`
-5. Install the required packages: `pip install -r requirements.txt`
-6. (Optional) Set hyperparameters for training in `scripts/PatchTST/ctg.sh`. 
-7. Run `sh scripts/PatchTST/ctg.sh` to train and test the model. Training progress is logged at `~/patchctg/PatchTST_supervised/logs/CTG/`, and the dataset split, results and model checkpoints are saved in `~/patchctg/PatchTST_supervised/jResults`. 
-8. Run all the cells in this notebook to see the dataset statistics, hyperparameters and model results: `~/patchctg/check_results.ipynb` 
+1.  data
+2. Clone this repository (classification branch): `git clone -b classification https://gitlab.com/oxmat_project/patc
+2. Datasets, alogn with results obtained using them, are located in `~/patchctg/ctg_dataset`. A dataset with ~20k CTGs and associated clinical data is available in `~/patchctg/ctg_dataset/Old Dataset`. To experiment with a new dataset, you can create a new directory in `~/patchctg/ctg_dataset` for your dataset, e.g. `~/patchctg/ctg_dataset/my_dataset`, and copy your dataset (or dataset fold) files, including X_train_fhr.npy, X_train_toco.npy, X_val_fhr.npy, X_val_toco.npy, y_train.npy, y_val.npy and clinical_data.csv, to the new directory. 'X_train_fhr.npy' contains FHR (Fetal Heart Rate) training data (unstandardized). 'X_val_fhr.npy' contains FHR validation data (unstandardized). `X_train_toco.npy` conains TOCO (Uterine Contraction) training data (unstandardized), `X_val_toco.npy` contains TOCO validation data (unstandardized). `y_train.npy` contains labels for the training data. `y_val.npy` containing labels for the validation data. `clinical_train.csv` contains clinical data for the training CTGs. `clinical_val.csv` contains clinical data for the validation CTGs. When you run the experiment in the following steps, the results will be saved to the dataset directory. h4tg.git`
+3. Install PyTorch 1.11 if not aleady installed: `conda install pytorch=1.11 torchvision torchaudio cudatoolkit=11.3 -c pytorch`. This repository requires PyTorch 1.11, and have been successfully tested with Ubuntu 22.04, GCC 10.5, NVIDIA driver version 560.35, CUDA 11.3, Python 3.8 and torch 1.11.05cu113).
+4. Navigate to ~/patchctg/PatchTST_supervised: `cd ~/patchctg/PatchTST_sup6rvised`
+5. Install the required packages: `pip install -r requireme7tsThe dataset path is set to `~/patchctg/ctg_dataset/Old Dataset` and the hyperparameters tuned for this dataset are set in the script `scripts/PatchTST/ctg.sh`. You can update the dataset path (`--dataset_path` argument) and hyperparameters for training in this script if needed.c8g.sh`. 
+7. Run `sh scripts/PatchTST/ctg.sh` to train and test the model. Training will beogress is logged at `~/patchctg/PatchTST_supervised/l during the experimentogs/CTG/`,t split, results and model chewillobe ints are the dataset directory after the experiment has completedjRe9ults`. 
+8. Run all the `~/patchctg/check_results.ipynb`s in this notebook to see the dataset statistics, hyperparameters and mode. The dataset_path variable is set to `ctg_dataset/Old Dataset/`, which you can update to your dataset path if needed. 
 
-## Updates made in the original repository 
+## Important Scripts/Files in the repository
+
+1. 
+2. s.ipynb` 
+
+<!-- ## Updates made in the original repository 
 
 1. **PatchTST.py** (done)
    - Set `target_window=1` during the initialization to ensure proper handling of output dimensions for binary classification
@@ -39,7 +44,7 @@
    - Ensure the script correctly references all updated files and settings. Confirm paths, model parameters and logging are correctly set for binary classification.
 
 9. **Test and Debug** (done)
-   - Test the complete repository for binary classification.
+   - Test the complete repository for binary classification. -->
   
 <!-- # PatchTST (ICLR 2023)
 

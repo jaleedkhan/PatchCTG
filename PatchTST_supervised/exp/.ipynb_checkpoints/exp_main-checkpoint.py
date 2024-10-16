@@ -395,14 +395,12 @@ class Exp_Main(Exp_Basic):
         # f.write('\n')
         # f.close()
 
-        accuracy, precision, recall, f1, auc = classification_metrics(preds, trues)
-        print('accuracy:{}, precision:{}, recall:{}, f1:{}, auc:{}'.format(accuracy, precision, recall, f1, auc))
-        f = open("result.txt", 'a')
-        f.write(setting + "  \n")
-        f.write('accuracy:{}, precision:{}, recall:{}, f1:{}, auc:{}'.format(accuracy, precision, recall, f1, auc))
-        f.write('\n')
-        f.write('\n')
-        f.close()
+        accuracy, auc, sensitivity, specificity, ppv, npv, f1 = classification_metrics(preds, trues)
+        print('Accuracy: {}, AUC: {}, Sensitivity: {}, Specificity: {}, PPV: {}, NPV: {}, F1: {}'.format(accuracy, auc, sensitivity, specificity, ppv, npv, f1))
+        with open("result.txt", 'a') as f:
+            f.write(setting + "  \n")
+            f.write('Accuracy: {}, AUC: {}, Sensitivity: {}, Specificity: {}, PPV: {}, NPV: {}, F1: {}'.format(accuracy, auc, sensitivity, specificity, ppv, npv, f1))
+            f.write('\n\n')
 
         # np.save(folder_path + 'metrics.npy', np.array([mae, mse, rmse, mape, mspe,rse, corr]))
         np.save(folder_path + 'preds.npy', preds)
@@ -411,22 +409,24 @@ class Exp_Main(Exp_Basic):
 
         # Save model, settings and results to jResults
         timestamp = datetime.now().strftime('%Y%m%d %H%M')
-        results_dir = './jResults/' + timestamp
-        existing_dir = None # check for any existing directory with a timestamp within 5 minutes of the current timestamp
-        for subdir in os.listdir('./jResults/'):
-            subdir_path = os.path.join('./jResults/', subdir)
-            if os.path.isdir(subdir_path):
-                try:
-                    subdir_time = datetime.strptime(subdir, '%Y%m%d %H%M')
-                    if abs((subdir_time - datetime.now()).total_seconds()) <= 300:
-                        existing_dir = subdir_path
-                        break
-                except ValueError:
-                    continue
-        if existing_dir:
-            results_dir = existing_dir
-        else:
-            os.makedirs(results_dir, exist_ok=True)
+        #results_dir = './jResults/' + timestamp
+        results_dir = os.path.join(self.args.dataset_path, timestamp)
+        # existing_dir = None # check for any existing directory with a timestamp within 5 minutes of the current timestamp
+        # for subdir in os.listdir('./jResults/'):
+        #     subdir_path = os.path.join('./jResults/', subdir)
+        #     if os.path.isdir(subdir_path):
+        #         try:
+        #             subdir_time = datetime.strptime(subdir, '%Y%m%d %H%M')
+        #             if abs((subdir_time - datetime.now()).total_seconds()) <= 300:
+        #                 existing_dir = subdir_path
+        #                 break
+        #         except ValueError:
+        #             continue
+        # if existing_dir:
+        #     results_dir = existing_dir
+        # else:
+        #     os.makedirs(results_dir, exist_ok=True)
+        os.makedirs(results_dir, exist_ok=True)
         np.save(os.path.join(results_dir, 'preds.npy'), preds)
         np.save(os.path.join(results_dir, 'trues.npy'), trues)
         shutil.copyfile(os.path.join('./checkpoints/ctg/' + setting, 'checkpoint.pth'), os.path.join(results_dir, 'checkpoint.pth'))
