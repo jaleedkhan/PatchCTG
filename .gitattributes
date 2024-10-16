@@ -1,0 +1,5 @@
+ctg_dataset/Old[[:space:]]Dataset/X_train_fhr.npy filter=lfs diff=lfs merge=lfs -text
+ctg_dataset/Old[[:space:]]Dataset/X_train_toco.npy filter=lfs diff=lfs merge=lfs -text
+ctg_dataset/Old[[:space:]]Dataset/archive/CTG_signals.csv filter=lfs diff=lfs merge=lfs -text
+ctg_dataset/Old[[:space:]]Dataset/archive/X.npy filter=lfs diff=lfs merge=lfs -text
+ctg_dataset/Old[[:space:]]Dataset/archive/X_train.npy filter=lfs diff=lfs merge=lfs -text
