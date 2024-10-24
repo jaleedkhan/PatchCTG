@@ -1,0 +1,16 @@
+Args in experiment:
+Namespace(activation='relu', affine=0, batch_size=48, c_out=1, checkpoints='./checkpoints/ctg', d_ff=128, d_layers=1, d_model=512, data='CTG', dec_in=2, decomposition=0, des='Exp', devices='0,1,2', distil=True, do_predict=False, dropout=0.1, e_layers=6, embed='timeF', embed_type=0, enc_in=2, factor=1, fc_dropout=0.4, features='M', freq='h', gpu=0, head_dropout=0.2, individual=0, is_optuna=False, is_training=1, itr=1, kernel_size=15, learning_rate=0.0001, loss='cross_entropy', lradj='type3', model='PatchTST', model_id='ctg_960', moving_avg=25, n_heads=4, num_classes=2, num_workers=0, output_attention=False, padding_patch='end', patch_len=16, patience=25, pct_start=0.3, pre_train_dataset_path='../ctg_dataset/Old Dataset (Cases Diff 3-7)', random_seed=2021, revin=1, root_path='./dataset/', seq_len=960, stride=16, subtract_last=0, target='OT', test_flop=False, train_dataset_path='../ctg_dataset/Dataset with Folds/model_datasets/fold_2', train_epochs=100, use_amp=False, use_gpu=True, use_multi_gpu=False)
+Use GPU: cuda:0
+>>>>>>>start training : ctg_960_PatchTST_CTG_sl960_nc2_dm512_nh4_el6_df128_fc1_Exp>>>>>>>>>>>>>>>>>>>>>>>>>>
+Dataset loaded and preprocessed.
+train set size: 9680
+Dataset loaded and preprocessed.
+val set size: 1076
+Dataset loaded and preprocessed.
+test set size: 1076
+Loading pre-trained model from ../ctg_dataset/Old Dataset (Cases Diff 3-7)/trained 20241019 0209/checkpoint.pth for fine-tuning...
+Testing the pretrained model on the new dataset before fine-tuning...
+Dataset loaded and preprocessed.
+test set size: 1076
+loading model
+Accuracy: 0.516728624535316, AUC: 0.4903677395281989, Sensitivity: 0.30111524163568776, Specificity: 0.7323420074349443, PPV: 0.5294117647058824, NPV: 0.5116883116883116, F1: 0.3838862559241706

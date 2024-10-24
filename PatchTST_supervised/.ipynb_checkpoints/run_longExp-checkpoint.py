@@ -43,6 +43,7 @@ def new_init(self, *args, **kwargs):
 torch.nn.Module.__init__ = new_init
 
 if __name__ == '__main__':
+    
     #parser = argparse.ArgumentParser(description='Autoformer & Transformer family for Time Series Forecasting')
     parser = argparse.ArgumentParser(description='PatchTST for Binary Classification')
 
@@ -56,12 +57,15 @@ if __name__ == '__main__':
     #                    help='model name, options: [Autoformer, Informer, Transformer]')
     parser.add_argument('--model', type=str, required=True, default='PatchTST', help='model name')
 
-
     # data loader
     parser.add_argument('--data', type=str, required=True, default='CTG', help='dataset type')
     parser.add_argument('--root_path', type=str, default='./ctg_dataset/', help='root path of the data file')
     #parser.add_argument('--data_path', type=str, default='X.npy', help='data file')
-    parser.add_argument('--dataset_path', type=str, required=True, help='path to the dataset directory containing the fold')
+    #parser.add_argument('--dataset_path', type=str, required=True, help='path to the dataset directory containing the fold')
+    parser.add_argument('--dataset_path', type=str, required=True, help='Path to the training dataset')
+    parser.add_argument('--pre_train_model_path', type=str, required=False, default=None, help='Path to the pre-training dataset to load the checkpoint from (for finetuning)')
+    parser.add_argument('--model_to_test', type=str, required=False, default=None,help='Path to the directory containing checkpoint.pth to use for testing')
+    
     #parser.add_argument('--data', type=str, required=True, default='ETTm1', help='dataset type')
     #parser.add_argument('--root_path', type=str, default='./data/ETT/', help='root path of the data file')
     #parser.add_argument('--data_path', type=str, default='ETTh1.csv', help='data file')
@@ -141,7 +145,7 @@ if __name__ == '__main__':
     parser.add_argument('--use_gpu', type=bool, default=True, help='use gpu')
     parser.add_argument('--gpu', type=int, default=0, help='gpu')
     parser.add_argument('--use_multi_gpu', action='store_true', help='use multiple gpus', default=False)
-    parser.add_argument('--devices', type=str, default='0,1,2,3', help='device ids of multile gpus')
+    parser.add_argument('--devices', type=str, default='0,1,2', help='device ids of multile gpus')
     parser.add_argument('--test_flop', action='store_true', default=False, help='See utils/tools for usage')
 
     parser.add_argument('--is_optuna', type=bool, default=False, help='hyperparameter tuning')

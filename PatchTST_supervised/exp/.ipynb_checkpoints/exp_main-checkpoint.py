@@ -40,8 +40,7 @@ class Exp_Main(Exp_Basic):
         # model = model_dict[self.args.model].Model(self.args, num_classes=self.args.num_classes).float()
 
         if self.args.use_multi_gpu and self.args.use_gpu:
-            model = nn.DataParallel(model, device_ids=[int(id_) for id_ in self.args.devices.split(',')])
-            #model = nn.DataParallel(model, device_ids=self.args.device_ids)
+            model = nn.DataParallel(model, device_ids=self.args.device_ids)
         return model
 
     def _get_data(self, flag):
@@ -49,7 +48,10 @@ class Exp_Main(Exp_Basic):
         return data_set, data_loader
 
     def _select_optimizer(self):
-        model_optim = optim.Adam(self.model.parameters(), lr=self.args.learning_rate)
+        #model_optim = optim.Adam(self.model.parameters(), lr=self.args.learning_rate)
+        # Only optimize the parameters that require gradients
+        trainable_params = filter(lambda p: p.requires_grad, self.model.parameters())
+        model_optim = optim.Adam(trainable_params, lr=self.args.learning_rate)
         return model_optim
 
     def _select_criterion(self):
@@ -127,6 +129,7 @@ class Exp_Main(Exp_Basic):
         return total_loss, auc
 
     def train(self, setting):
+        
         train_data, train_loader = self._get_data(flag='train')
         vali_data, vali_loader = self._get_data(flag='val')  
         test_data, test_loader = self._get_data(flag='test')
@@ -135,6 +138,37 @@ class Exp_Main(Exp_Basic):
         if not os.path.exists(path):
             os.makedirs(path)
 
+        # Load pre-trained checkpoint if specified
+        if self.args.pre_train_model_path:
+            checkpoint_path = os.path.join(self.args.pre_train_model_path, 'checkpoint.pth')
+            if os.path.exists(checkpoint_path):
+                print(f"Loading pre-trained model from {checkpoint_path} for fine-tuning...")
+                try:
+                    self.model.load_state_dict(torch.load(checkpoint_path, map_location=self.device))
+                    for name, param in self.model.named_parameters():
+                        # Option 1 - Freeze all layers except the classification head (linear probing)
+                        if 'classification_head' not in name:
+                            param.requires_grad = False
+                        else:
+                            param.requires_grad = True
+        
+                        # Option 2 - Don't freeze any layers (train entire model during finetuning)
+                        # param.requires_grad = True
+        
+                    print("Testing the pretrained model on the new dataset before fine-tuning...")
+                    self.test(setting, test=1)  
+                except FileNotFoundError:
+                    print(f"Checkpoint not found at {checkpoint_path}, training from scratch.")
+                except Exception as e:
+                    print(f"Error loading checkpoint: {e}, training from scratch.")
+            else:
+                print(f"No checkpoint.pth found in {self.args.pre_train_model_path}, training from scratch.")
+
+        trainable_params = [name for name, param in self.model.named_parameters() if param.requires_grad]
+        print("Trainable parameters:", trainable_params)
+
+        torch.cuda.empty_cache()
+        
         time_now = time.time()
 
         train_steps = len(train_loader)
@@ -275,8 +309,13 @@ class Exp_Main(Exp_Basic):
         test_data, test_loader = self._get_data(flag='test')
         
         if test:
-            print('loading model') 
-            self.model.load_state_dict(torch.load(os.path.join('./checkpoints/ctg/' + setting, 'checkpoint.pth')))
+            if self.args.model_to_test:
+                checkpoint_path = os.path.join(self.args.model_to_test, 'checkpoint.pth')
+            else:
+                checkpoint_path = os.path.join('./checkpoints/ctg/' + setting, 'checkpoint.pth')
+            print(f'Loading model from: {checkpoint_path} for testing')
+            # Load the model state
+            self.model.load_state_dict(torch.load(checkpoint_path))
 
         preds = []
         trues = []
@@ -377,6 +416,8 @@ class Exp_Main(Exp_Basic):
         trues = np.concatenate(trues, axis=0)
         inputx = np.concatenate(inputx, axis=0)
 
+        torch.cuda.empty_cache()
+
         #preds = preds.reshape(-1, preds.shape[-2], preds.shape[-1])
         #trues = trues.reshape(-1, trues.shape[-2], trues.shape[-1])
         #inputx = inputx.reshape(-1, inputx.shape[-2], inputx.shape[-1])
@@ -409,23 +450,14 @@ class Exp_Main(Exp_Basic):
 
         # Save model, settings and results to jResults
         timestamp = datetime.now().strftime('%Y%m%d %H%M')
-        #results_dir = './jResults/' + timestamp
-        results_dir = os.path.join(self.args.dataset_path, timestamp)
-        # existing_dir = None # check for any existing directory with a timestamp within 5 minutes of the current timestamp
-        # for subdir in os.listdir('./jResults/'):
-        #     subdir_path = os.path.join('./jResults/', subdir)
-        #     if os.path.isdir(subdir_path):
-        #         try:
-        #             subdir_time = datetime.strptime(subdir, '%Y%m%d %H%M')
-        #             if abs((subdir_time - datetime.now()).total_seconds()) <= 300:
-        #                 existing_dir = subdir_path
-        #                 break
-        #         except ValueError:
-        #             continue
-        # if existing_dir:
-        #     results_dir = existing_dir
-        # else:
-        #     os.makedirs(results_dir, exist_ok=True)
+        
+        if self.args.pre_train_model_path:
+            results_dir = os.path.join(self.args.dataset_path, f"finetuned {timestamp}")
+        elif self.args.model_to_test:
+            results_dir = os.path.join(self.args.dataset_path, f"tested {timestamp}")
+        else:
+            results_dir = os.path.join(self.args.dataset_path, f"trained {timestamp}")
+
         os.makedirs(results_dir, exist_ok=True)
         np.save(os.path.join(results_dir, 'preds.npy'), preds)
         np.save(os.path.join(results_dir, 'trues.npy'), trues)

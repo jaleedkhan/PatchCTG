@@ -1,2 +1,0 @@
-number,value,datetime_start,datetime_complete,duration,params_batch_size,params_d_ff,params_d_model,params_dropout,params_e_layers,params_fc_dropout,params_head_dropout,params_learning_rate,params_n_heads,state
-0,0.49907607438063556,2024-09-16 19:26:09.595045,2024-09-16 19:30:14.699671,0 days 00:04:05.104626,64,320,128,0.2,6,0.5,0.0,5e-05,16,COMPLETE

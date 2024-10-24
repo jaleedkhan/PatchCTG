@@ -34,14 +34,14 @@ def data_provider(args, flag):
         # if np.isnan(X).any():
         #     print("X contains NaN values")
 
-        X_train_fhr = np.load(os.path.join(args.dataset_path, 'X_train_fhr.npy'))
-        X_train_toco = np.load(os.path.join(args.dataset_path, 'X_train_toco.npy'))
-        y_train = np.load(os.path.join(args.dataset_path, 'y_train.npy'))
-        clinical_train = pd.read_csv(os.path.join(args.dataset_path, 'clinical_train.csv'))
-        X_val_fhr = np.load(os.path.join(args.dataset_path, 'X_val_fhr.npy'))
-        X_val_toco = np.load(os.path.join(args.dataset_path, 'X_val_toco.npy'))
-        y_val = np.load(os.path.join(args.dataset_path, 'y_val.npy'))
-        clinical_val = pd.read_csv(os.path.join(args.dataset_path, 'clinical_val.csv'))
+        X_train_fhr = np.load(os.path.join(args.train_dataset_path, 'X_train_fhr.npy'))
+        X_train_toco = np.load(os.path.join(args.train_dataset_path, 'X_train_toco.npy'))
+        y_train = np.load(os.path.join(args.train_dataset_path, 'y_train.npy'))
+        clinical_train = pd.read_csv(os.path.join(args.train_dataset_path, 'clinical_train.csv'))
+        X_val_fhr = np.load(os.path.join(args.train_dataset_path, 'X_val_fhr.npy'))
+        X_val_toco = np.load(os.path.join(args.train_dataset_path, 'X_val_toco.npy'))
+        y_val = np.load(os.path.join(args.train_dataset_path, 'y_val.npy'))
+        clinical_val = pd.read_csv(os.path.join(args.train_dataset_path, 'clinical_val.csv'))
 
         # Adjust values (ignore -1)
         X_train_fhr = np.where((X_train_fhr != -1) & (X_train_fhr < 50.0), 50.0, X_train_fhr)

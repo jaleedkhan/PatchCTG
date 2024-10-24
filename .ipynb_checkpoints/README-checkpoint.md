@@ -1,20 +1,67 @@
 # [PatchTST](https://github.com/yuqinie98/PatchTST/tree/main/PatchTST_supervised) adapted for binary classification of CTGs 
 
-## Instructions to run the adapted PatchTST model for binary CTG classification 
+This is the codebase for Patch Transformer for CTG classification (PatchCTG). The time series forecasting model, Patch Transformer ([PatchTST](https://github.com/yuqinie98/PatchTST/tree/main/PatchTST_supervised)), is adapted for binary classification of CTGs.
 
+## Overview of important scripts/files in the repository
+1. `patchctg/ctg_dataset`: Contains the CTG datasets used for model training, validation, testing and finetuning. Within this directory, each dataset has its own subdirectory containing the following files:
+    - `X_train_fhr.npy` contains Fetal Heart Rate (FHR) training data (unstandardized).
+    - `X_val_fhr.npy` contains FHR validation data (unstandardized)
+    - `X_train_toco.npy` conains Uterine Contraction (TOCO) training data (unstandardized)
+    - `X_val_toco.npy` contains TOCO validation data (unstandardized)
+    - `y_train.npy` contains labels for the training data
+    - `y_val.npy` containing labels for the validation data
+    - `clinical_train.csv` contains clinical data for the training CTGs
+    - `clinical_val.csv` contains clinical data for the validation CTGs
+    - After training, finetuning or testing the model using this dataset, the model results, logs and checkpoint are saved in a subdirectory named timestamp within the dataset's directory
+2. `patchctg/dataset.ipynb`: A Jupyter notebook for analyzing and preprocessing CTG datasets.
+3. `patchctg/PatchTST_supervised`: Contains the implementation of the Patch Transformer model adapted for supervised binary classification of CTGs.
+4. `patchctg/PatchTST_supervised/models/PatchTST.py`: Implements the core model architecture, including the definition of transformer layers and the classification head for binary classification.
+5. `patchctg/PatchTST_supervised/layers/PatchTST_backbone.py`: Defines the backbone architecture of the model that handles the feature extraction part of the model for sequential CTG data.
+6. `patchctg/PatchTST_supervised/layers/PatchTST_layers.py`: Provides support functions and modules for transformer layers, including positional encoding and attention mechanisms used by the backbone.
+7. `patchctg/PatchTST_supervised/data_provider/data_factory.py`: Manages the data loading pipeline, including preprocessing the CTG data.
+8. `patchctg/PatchTST_supervised/data_provider/data_loader.py`: Defines custom data loading classes to handle specific dataset requirements, such as CTG features and labels, making sure data is accessible to the model during training.
+9. `patchctg/PatchTST_supervised/utils/metrics.py`: Contains implementations of the metrics used to evaluate model performance, such as accuracy, AUC, sensitivity, specificity, PPV, NPV and F1 score, for binary classification.
+10. `patchctg/PatchTST_supervised/exp/exp_main.py`: The main experiment script that orchestrates model training, validation and testing. It integrates the PatchTST model with the data and manages the overall training pipeline.
+11. `patchctg/PatchTST_supervised/run_longExp.py`: The main script for executing long experiments, including model training and evaluation for multiple iterations. 
+12. `patchctg/PatchTST_supervised/run_longExp_ht.py`: Similar to run_longExp.py, but used for hyperparameter tuning experiments, to find the best set of hyperparameters for CTG classification.
+13. `patchctg/PatchTST_supervised/scripts/PatchTST/ctg.sh`: A bash script for automating the training process, including setting up paths, defining hyperparameters and running training and testing commands.
+14. `patchctg/PatchTST_supervised/logs/CTG`: Stores log files generated during model training and testing, which help in tracking the training progress, hyperparameters and any issues that arise.
+15. `patchctg/check_results.ipynb`: A Jupyter notebook to visualize and analyze the results of a trained/finetuned PatchCTG model and interrogate the results across confounders.
+16. `patchctg/check_results_ht.ipynb`: Similar to `check_results.ipynb`, this notebook is used for evaluating hyperparameter tuning experiments.
+
+## Steps to run the adapted PatchTST model for binary CTG classification 
+
+### Setup
 1. Clone this repository (classification branch): `git clone -b classification https://gitlab.com/oxmat_project/patchctg.git`
-2. Datasets, along with results obtained using them, are located in `~/patchctg/ctg_dataset`. A dataset with ~20k CTGs and associated clinical data is available in `~/patchctg/ctg_dataset/Old Dataset`. To experiment with a new dataset, you can create a new directory in `~/patchctg/ctg_dataset` for your dataset, e.g. `~/patchctg/ctg_dataset/my_dataset`, and copy your dataset (or dataset fold) files, including X_train_fhr.npy, X_train_toco.npy, X_val_fhr.npy, X_val_toco.npy, y_train.npy, y_val.npy and clinical_data.csv, to the new directory. 'X_train_fhr.npy' contains FHR (Fetal Heart Rate) training data (unstandardized). 'X_val_fhr.npy' contains FHR validation data (unstandardized). `X_train_toco.npy` conains TOCO (Uterine Contraction) training data (unstandardized), `X_val_toco.npy` contains TOCO validation data (unstandardized). `y_train.npy` contains labels for the training data. `y_val.npy` containing labels for the validation data. `clinical_train.csv` contains clinical data for the training CTGs. `clinical_val.csv` contains clinical data for the validation CTGs. When you run the experiment in the following steps, the results will be saved to the dataset directory.
+2. Datasets, along with results obtained using them, are located in `~/patchctg/ctg_dataset`. A dataset with ~20k CTGs and associated clinical data is available in `~/patchctg/ctg_dataset/Old Dataset`. To experiment with a new dataset, you can create a new directory in `~/patchctg/ctg_dataset` for your dataset, e.g. `~/patchctg/ctg_dataset/my_dataset`, and copy your dataset (or dataset fold) files, including X_train_fhr.npy, X_train_toco.npy, X_val_fhr.npy, X_val_toco.npy, y_train.npy, y_val.npy and clinical_data.csv, to the new directory. 'X_train_fhr.npy' contains FHR (Fetal Heart Rate) training data (unstandardized). 'X_val_fhr.npy' contains FHR validation data (unstandardized). `X_train_toco.npy` conains TOCO (Uterine Contraction) training data (unstandardized), `X_val_toco.npy` contains TOCO validation data (unstandardized). `y_train.npy` contains labels for the training data. `y_val.npy` containing labels for the validation data. `clinical_train.csv` contains clinical data for the training CTGs. `clinical_val.csv` contains clinical data for the validation CTGs. When you run an experiment following the following steps, the results will be saved to the dataset directory in a subdirectory with timestamp as name.
 3. Install PyTorch 1.11 if not aleady installed: `conda install pytorch=1.11 torchvision torchaudio cudatoolkit=11.3 -c pytorch`. This repository requires PyTorch 1.11, and has been successfully tested with Ubuntu 22.04, GCC 10.5, NVIDIA driver version 560.35, CUDA 11.3, Python 3.8 and torch 1.11.05cu113).
 4. Navigate to ~/patchctg/PatchTST_supervised: `cd ~/patchctg/PatchTST_supervised`
 5. Install the required packages: `pip install -r requirements.txt`.
-6. The dataset path is set to `~/patchctg/ctg_dataset/Old Dataset` and the hyperparameters tuned for this dataset are set in the script `scripts/PatchTST/ctg.sh`. You can update the dataset path (`--dataset_path` argument) and hyperparameters for training in this script if needed. 
-7. Run `sh scripts/PatchTST/ctg.sh` to train and test the model. Training progress will be logged at `~/patchctg/PatchTST_supervised/logs/CTG` during the experiment, and results and model checkpoints will be saved to the dataset directory after the experiment has completed. 
-8. Run all the cells in `~/patchctg/check_results.ipynb` notebook to see the dataset statistics, hyperparameters and results after the experiment has completed. The dataset_path variable is set to `ctg_dataset/Old Dataset/`, which you can update to your dataset path if needed. 
 
-## Important Scripts/Files in the repository
+### Training
+1. Navigate to ~/patchctg/PatchTST_supervised: `cd ~/patchctg/PatchTST_supervised`
+2. Uncomment the python command with comment `# SCRIPT 1: TRAIN`. Comment out the other two python commands. 
+3. The path to the dataset (including train and val/test sets) is set to `~/patchctg/ctg_dataset/Old Dataset` and the hyperparameters tuned for this dataset are set in the script `scripts/PatchTST/ctg.sh`. You can update the dataset path (`--dataset_path` argument) and hyperparameters for training in this script if needed.
+4. Run `sh scripts/PatchTST/ctg.sh` to train and test the model. Training progress will be logged at `~/patchctg/PatchTST_supervised/logs/CTG` during the experiment, and results and model checkpoints will be saved to a new directory named timestamp within the dataset directory after the experiment has completed.
+5. Run the cells in `~/patchctg/check_results.ipynb` notebook to see the dataset statistics, hyperparameters and results after the experiment has completed. The dataset_path variable is set to `ctg_dataset/Old Dataset/` in this notebook, which you can update to your dataset path if needed. 
 
-1. 
-2. 
+### Finetuning
+1. Navigate to ~/patchctg/PatchTST_supervised: `cd ~/patchctg/PatchTST_supervised`
+2. Uncomment the python command with comment `# SCRIPT 2: FINETUNE`. Comment out the other two python commands.
+3. The pretrained model path is set to `~/patchctg/ctg_dataset/Old Dataset (Cases Diff 3-7)/trained 20241019 0209` in the script `scripts/PatchTST/ctg.sh`. You can update it using the `--pre_train_model_path` argument if needed.
+4. The path to the dataset (including train and val/test sets) is set to `~/patchctg/ctg_dataset/Old Dataset (Cases Diff 0-2)` and the hyperparameters are set in the script `scripts/PatchTST/ctg.sh`. You can update the dataset path (`--dataset_path` argument) and hyperparameters for training in this script if needed.
+5. Run `sh scripts/PatchTST/ctg.sh` to finetune and test the model. Training progress will be logged at `~/patchctg/PatchTST_supervised/logs/CTG` during the experiment, and results and model checkpoints will be saved to a new directory named timestamp within the dataset directory after the experiment has completed.
+6. Run the cells in `~/patchctg/check_results.ipynb` notebook to see the dataset statistics, hyperparameters and results after the experiment has completed. The dataset_path variable is set to `ctg_dataset/Old Dataset/` in this notebook, which you can update to `~/patchctg/ctg_dataset/Old Dataset (Cases Diff 0-2)` or your dataset path. 
+
+### Testing 
+1. Navigate to ~/patchctg/PatchTST_supervised: `cd ~/patchctg/PatchTST_supervised`
+2. Uncomment the python command with comment `# SCRIPT 3: TEST`. Comment out the other two python commands.
+3. The trained model path is set to `~/patchctg/ctg_dataset/Old Dataset (Cases Diff 3-7)/trained 20241019 0209` in the script `scripts/PatchTST/ctg.sh`. You can update it using the `--model_to_test` argument if needed.
+4. The path to the dataset (including val/test set) is set to `~/patchctg/ctg_dataset/Old Dataset (Cases Diff 0-2)` in the script `scripts/PatchTST/ctg.sh`. You can update the dataset path (`--dataset_path` argument) in this script if needed.
+5. Run `sh scripts/PatchTST/ctg.sh` to test the model. The results will be saved to a new directory named timestamp within the dataset directory after the experiment has completed.
+6. Run the cells in `~/patchctg/check_results.ipynb` notebook to see the dataset statistics, hyperparameters and results after the experiment has completed. The dataset_path variable is set to `ctg_dataset/Old Dataset/` in this notebook, which you can update to `~/patchctg/ctg_dataset/Old Dataset (Cases Diff 0-2)` or your dataset path. 
+
+### Hyperparameter Tuning
 
 <!-- ## Updates made in the original repository 
 
