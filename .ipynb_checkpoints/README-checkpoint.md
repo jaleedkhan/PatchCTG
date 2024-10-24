@@ -1,4 +1,4 @@
-# [PatchTST](https://github.com/yuqinie98/PatchTST/tree/main/PatchTST_supervised) adapted for binary classification of CTGs 
+# PatchCTG: Patch Transformer for CTG Classification
 
 This is the codebase for Patch Transformer for CTG classification (PatchCTG). The time series forecasting model, Patch Transformer ([PatchTST](https://github.com/yuqinie98/PatchTST/tree/main/PatchTST_supervised)), is adapted for binary classification of CTGs.
 
