@@ -3,7 +3,7 @@
 This is the codebase for Patch Transformer for CTG classification (PatchCTG). The time series forecasting model, Patch Transformer ([PatchTST](https://github.com/yuqinie98/PatchTST/tree/main/PatchTST_supervised)), is adapted for binary classification of CTGs.
 
 ## Overview of important scripts/files in the repository
-1. `patchctg/ctg_dataset`: Contains the CTG datasets used for model training, validation, testing and finetuning. Within this directory, each dataset has its own subdirectory containing the following files:
+1. `patchctg/ctg_dataset`: Contains the CTG datasets used for model training, validation, testing and finetuning. Each dataset subdirectory includes `.npy` files for Fetal Heart Rate (FHR) signals, Uterine Contraction (TOCO) signals and their corresponding labels and `.csv` files containing the associated clinical data:
     - `X_train_fhr.npy` contains Fetal Heart Rate (FHR) training data (unstandardized).
     - `X_val_fhr.npy` contains FHR validation data (unstandardized)
     - `X_train_toco.npy` conains Uterine Contraction (TOCO) training data (unstandardized)
@@ -24,7 +24,7 @@ This is the codebase for Patch Transformer for CTG classification (PatchCTG). Th
 10. `patchctg/PatchTST_supervised/exp/exp_main.py`: The main experiment script that orchestrates model training, validation and testing. It integrates the PatchTST model with the data and manages the overall training pipeline.
 11. `patchctg/PatchTST_supervised/run_longExp.py`: The main script for executing long experiments, including model training and evaluation for multiple iterations. 
 12. `patchctg/PatchTST_supervised/run_longExp_ht.py`: Similar to run_longExp.py, but used for hyperparameter tuning experiments, to find the best set of hyperparameters for CTG classification.
-13. `patchctg/PatchTST_supervised/scripts/PatchTST/ctg.sh`: A bash script for automating the training process, including setting up paths, defining hyperparameters and running training and testing commands.
+13. `patchctg/PatchTST_supervised/scripts/PatchTST/ctg.sh`: A bash script for automating the training process, including setting up paths, defining hyperparameters and running training and testing commands. The arguments in `ctg.sh` script can be updated as per your dataset, pre-trained model or hyperparameters requirements before running each experiment. The script has separate commands for training, finetuning and testing. To run a specific mode, uncomment the relevant command (marked as `# SCRIPT 1`, `# SCRIPT 2`, or `# SCRIPT 3`) and comment out the others.
 14. `patchctg/PatchTST_supervised/logs/CTG`: Stores log files generated during model training and testing, which help in tracking the training progress, hyperparameters and any issues that arise.
 15. `patchctg/check_results.ipynb`: A Jupyter notebook to visualize and analyze the results of a trained/finetuned PatchCTG model and interrogate the results across confounders.
 16. `patchctg/check_results_ht.ipynb`: Similar to `check_results.ipynb`, this notebook is used for evaluating hyperparameter tuning experiments.
