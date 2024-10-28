@@ -93,6 +93,8 @@ def objective(trial):
             root_path='./dataset/',
             data_path='X.npy',
             dataset_path=dataset_path,  
+            pre_train_model_path=None,  
+            model_to_test=None,
             features='M',
             seq_len=960,
             enc_in=2,
@@ -135,6 +137,15 @@ def objective(trial):
             use_amp=True,
             is_optuna=True
         )
+
+        # Define device ids based on the GPU configuration
+        if args.use_gpu and args.use_multi_gpu:
+            args.devices = args.devices.replace(' ', '')  # Fixed the typo
+            device_ids = args.devices.split(',')
+            args.device_ids = [int(id_) for id_ in device_ids]
+            args.gpu = args.device_ids[0]
+        else:
+            args.device_ids = None  # Ensure that args.device_ids is defined even when multi-GPU is not used
     
         # Set the random seed
         random.seed(args.random_seed)

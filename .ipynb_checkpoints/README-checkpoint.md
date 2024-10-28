@@ -62,6 +62,11 @@ This is the codebase for Patch Transformer for CTG classification (PatchCTG). Th
 6. Run the cells in `~/patchctg/check_results.ipynb` notebook to see the dataset statistics, hyperparameters and results after the experiment has completed. The dataset_path variable is set to `ctg_dataset/Old Dataset/` in this notebook, which you can update to `~/patchctg/ctg_dataset/Old Dataset (Cases Diff 0-2)` or your dataset path. 
 
 ### Hyperparameter Tuning
+1. Navigate to ~/patchctg/PatchTST_supervised: `cd ~/patchctg/PatchTST_supervised`
+2. Set the hyperparameter tuning search space in `run_longExp_ht.py` (or use the already set search space).
+3. Run `python run_longExp_ht.py --dataset "../ctg_dataset/Old Dataset"` to run the hyperparameter tuning experiment on the specified dataset. Update the dataset path if required. A new timestamped subdirectory will be created in a subdirectory named "optuna" within the dataset directory, where the hyperparameter tuning results will be saved. To check the completed trials during execution of this script, check `optuna_study_results.csv` in the timestamped subdirectory.
+4. (Optional) To resume an existing or partially completed hyperparameter tuning experiment, run `python run_longExp_ht.py --resume ../ctg_dataset/Old Dataset/optuna/20241008_1152`. Update the path to an existing or partially completed hyperparameter tuning experiment if required.
+5. Run the cells in `~/patchctg/check_results_ht.ipynb` notebook to see the hyperparameter tuning results. For more details on the hyperparameters used and performance achieved in each trial, check `optuna_study_results_final.csv` in the timestamped subdirectory after the experiment has completed. 
 
 <!-- ## Updates made in the original repository 
 
