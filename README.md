@@ -5,7 +5,7 @@ This is the codebase for Patch Transformer for CTG classification (PatchCTG). Th
 ## Related resources
 - PatchCTG Manuscript Draft: https://www.overleaf.com/read/ytymztpqtgpf#144035
 - PatchCTG Presentation Slides: [Patch Transformer for Antepartum CTG Classification.pptx](https://gitlab.com/oxmat_project/patchctg/-/blob/classification/Slides/Patch%20Transformer%20for%20Antepartum%20CTG%20Classification.pptx?ref_type=heads)
-- Presentation slides of the talk on Deep Learning in Antepartum Fetal Monitoring at [SPaM in Labour 2024](https://sites.unica.it/spam2024/program/): [SPaM24 - Jaleed - Deep Learning in Antepartum Fetal Monitoring.pptx](https://gitlab.com/oxmat_project/patchctg/-/blob/classification/Slides/SPaM24%20-%20Jaleed%20-%20Deep%20Learning%20in%20Antepartum%20Fetal%20Monitoring.pptx?ref_type=heads)
+- Presentation slides of the [SPaM in Labour 2024](https://sites.unica.it/spam2024/program/) talk: [SPaM24 - Jaleed - Deep Learning in Antepartum Fetal Monitoring.pptx](https://gitlab.com/oxmat_project/patchctg/-/blob/classification/Slides/SPaM24%20-%20Jaleed%20-%20Deep%20Learning%20in%20Antepartum%20Fetal%20Monitoring.pptx?ref_type=heads)
 
 ## Important Files and Directories
 1. `patchctg/ctg_dataset`: Contains the CTG datasets used for model training, validation, testing and finetuning. Each dataset subdirectory includes `.npy` files for Fetal Heart Rate (FHR) signals, Uterine Contraction (TOCO) signals and their corresponding labels and `.csv` files containing the associated clinical data:
