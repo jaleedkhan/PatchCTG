@@ -28,6 +28,7 @@ This is the codebase for Patch Transformer for CTG classification (PatchCTG). Th
 14. `patchctg/PatchTST_supervised/logs/CTG`: Stores log files generated during model training and testing, which help in tracking the training progress, hyperparameters and any issues that arise.
 15. `patchctg/check_results.ipynb`: A Jupyter notebook to visualize and analyze the results of a trained/finetuned PatchCTG model and interrogate the results across confounders.
 16. `patchctg/check_results_ht.ipynb`: Similar to `check_results.ipynb`, this notebook is used for evaluating hyperparameter tuning experiments.
+17. `patchctg/Slides`: Powerpoint slides on this work 
 
 ## Running the PatchCTG model
 
