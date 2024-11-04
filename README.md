@@ -69,6 +69,11 @@ This is the codebase for Patch Transformer for CTG classification (PatchCTG). Th
 4. (Optional) To resume an existing or partially completed hyperparameter tuning experiment, run `python run_longExp_ht.py --resume ../ctg_dataset/Old Dataset/optuna/20241008_1152`. Update the path to an existing or partially completed hyperparameter tuning experiment if required.
 5. Run the cells in `~/patchctg/check_results_ht.ipynb` notebook to see the hyperparameter tuning results. For more details on the hyperparameters used and performance achieved in each trial, check `optuna_study_results_final.csv` in the timestamped subdirectory after the experiment has completed. 
 
+## Related resources
+- PatchCTG Manuscript Draft: https://www.overleaf.com/read/ytymztpqtgpf#144035
+- PatchCTG Presentation Slides: [Patch Transformer for Antepartum CTG Classification.pptx](https://gitlab.com/oxmat_project/patchctg/-/blob/classification/Slides/Patch%20Transformer%20for%20Antepartum%20CTG%20Classification.pptx?ref_type=heads)
+- Presentation slides of the talk on Deep Learning in Antepartum Fetal Monitoring at [SPaM in Labour 2024](https://sites.unica.it/spam2024/program/): [SPaM24 - Jaleed - Deep Learning in Antepartum Fetal Monitoring.pptx](https://gitlab.com/oxmat_project/patchctg/-/blob/classification/Slides/SPaM24%20-%20Jaleed%20-%20Deep%20Learning%20in%20Antepartum%20Fetal%20Monitoring.pptx?ref_type=heads)
+
 <!-- ## Updates made in the original repository 
 
 1. **PatchTST.py** (done)
