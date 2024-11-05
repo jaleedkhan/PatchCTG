@@ -28,12 +28,13 @@ This is the codebase for Patch Transformer for CTG classification (PatchCTG). Th
 14. `patchctg/PatchTST_supervised/logs/CTG`: Stores log files generated during model training and testing, which help in tracking the training progress, hyperparameters and any issues that arise.
 15. `patchctg/check_results.ipynb`: A Jupyter notebook to visualize and analyze the results of a trained/finetuned PatchCTG model and interrogate the results across confounders.
 16. `patchctg/check_results_ht.ipynb`: Similar to `check_results.ipynb`, this notebook is used for evaluating hyperparameter tuning experiments.
+17. `patchctg/Slides`: Powerpoint slides on this work 
 
 ## Running the PatchCTG model
 
 ### Setup
 1. Clone this repository (classification branch): `git clone -b classification https://gitlab.com/oxmat_project/patchctg.git`
-2. Datasets, along with results obtained using them, are located in `~/patchctg/ctg_dataset`. A dataset with ~20k CTGs and associated clinical data is available in `~/patchctg/ctg_dataset/Old Dataset`. To experiment with a new dataset, you can create a new directory in `~/patchctg/ctg_dataset` for your dataset, e.g. `~/patchctg/ctg_dataset/my_dataset`, and copy your dataset (or dataset fold) files, including X_train_fhr.npy, X_train_toco.npy, X_val_fhr.npy, X_val_toco.npy, y_train.npy, y_val.npy and clinical_data.csv, to the new directory. When you run an experiment following the following steps, the results will be saved to the dataset directory in a subdirectory with timestamp as name.
+2. Datasets, along with results obtained using them, are located in `~/patchctg/ctg_dataset`. Create a new directory in `~/patchctg/ctg_dataset` for your dataset, e.g. `~/patchctg/ctg_dataset/my_dataset`, and copy your dataset files, including X_train_fhr.npy, X_train_toco.npy, X_val_fhr.npy, X_val_toco.npy, y_train.npy, y_val.npy and clinical_data.csv, to the new directory. When you run an experiment following the following steps, the results will be saved to the dataset directory in a subdirectory with timestamp as name.
 3. Install PyTorch 1.11 if not aleady installed: `conda install pytorch=1.11 torchvision torchaudio cudatoolkit=11.3 -c pytorch`. This repository requires PyTorch 1.11, and has been successfully tested with Ubuntu 22.04, GCC 10.5, NVIDIA driver version 560.35, CUDA 11.3, Python 3.8 and torch 1.11.05cu113).
 4. Navigate to ~/patchctg/PatchTST_supervised: `cd ~/patchctg/PatchTST_supervised`
 5. Install the required packages: `pip install -r requirements.txt`.
@@ -41,17 +42,17 @@ This is the codebase for Patch Transformer for CTG classification (PatchCTG). Th
 ### Training
 1. Navigate to ~/patchctg/PatchTST_supervised: `cd ~/patchctg/PatchTST_supervised`
 2. Uncomment the python command with comment `# SCRIPT 1: TRAIN`. Comment out the other two python commands. 
-3. The path to the dataset (including train and val/test sets) is set to `~/patchctg/ctg_dataset/Old Dataset` and the hyperparameters tuned for this dataset are set in the script `scripts/PatchTST/ctg.sh`. You can update the dataset path (`--dataset_path` argument) and hyperparameters for training in this script if needed.
+3. Update the dataset path (`--dataset_path` argument) and hyperparameters for training in `scripts/PatchTST/ctg.sh`.
 4. Run `sh scripts/PatchTST/ctg.sh` to train and test the model. Training progress is logged in `~/patchctg/PatchTST_supervised/logs/CTG`. Upon completion, results and checkpoints are saved in a timestamped subdirectory within the dataset directory.
-5. Run the cells in `~/patchctg/check_results.ipynb` notebook to see the dataset statistics, hyperparameters and results after the experiment has completed. The dataset_path variable is set to `ctg_dataset/Old Dataset/` in this notebook, which you can update to your dataset path if needed. 
+5. Set the `dataset_path` variable to your dataset path in `~/patchctg/check_results.ipynb` notebook and run the cells in  to see the dataset statistics, hyperparameters and results after the experiment has completed. 
 
 ### Finetuning
 1. Navigate to ~/patchctg/PatchTST_supervised: `cd ~/patchctg/PatchTST_supervised`
 2. Uncomment the python command with comment `# SCRIPT 2: FINETUNE`. Comment out the other two python commands.
-3. The pretrained model path is set to `~/patchctg/ctg_dataset/Old Dataset (Cases Diff 3-7)/trained 20241019 0209` in the script `scripts/PatchTST/ctg.sh`. You can update it using the `--pre_train_model_path` argument if needed.
-4. The path to the dataset (including train and val/test sets) is set to `~/patchctg/ctg_dataset/Old Dataset (Cases Diff 0-2)` and the hyperparameters are set in the script `scripts/PatchTST/ctg.sh`. You can update the dataset path (`--dataset_path` argument) and hyperparameters for training in this script if needed.
+3. Set the pretrained model path using the `--pre_train_model_path` argument is set to your pre-trained model directory (the timestamped directory saved within the dataset directory after training).
+4. Set the path to the dataset (including train and val/test sets) to your dataset path (`--dataset_path` argument) and the hyperparameters for training/finetuning in `scripts/PatchTST/ctg.sh`. 
 5. Run `sh scripts/PatchTST/ctg.sh` to finetune and test the model. Training progress is logged in `~/patchctg/PatchTST_supervised/logs/CTG`. Upon completion, results and checkpoints are saved in a timestamped subdirectory within the dataset directory.
-6. Run the cells in `~/patchctg/check_results.ipynb` notebook to see the dataset statistics, hyperparameters and results after the experiment has completed. The dataset_path variable is set to `ctg_dataset/Old Dataset/` in this notebook, which you can update to `~/patchctg/ctg_dataset/Old Dataset (Cases Diff 0-2)` or your dataset path. 
+6. Set the `dataset_path` variable to your dataset path in `~/patchctg/check_results.ipynb` notebook and run the cells in  to see the dataset statistics, hyperparameters and results after the experiment has completed. 
 
 ### Testing 
 1. Navigate to ~/patchctg/PatchTST_supervised: `cd ~/patchctg/PatchTST_supervised`
@@ -64,8 +65,8 @@ This is the codebase for Patch Transformer for CTG classification (PatchCTG). Th
 ### Hyperparameter Tuning
 1. Navigate to ~/patchctg/PatchTST_supervised: `cd ~/patchctg/PatchTST_supervised`
 2. Set the hyperparameter tuning search space in `run_longExp_ht.py` (or use the already set search space).
-3. Run `python run_longExp_ht.py --dataset "../ctg_dataset/Old Dataset"` to run the hyperparameter tuning experiment on the specified dataset. Update the dataset path if required. A new timestamped subdirectory will be created in a subdirectory named "optuna" within the dataset directory, where the hyperparameter tuning results will be saved. To check the completed trials during execution of this script, check `optuna_study_results.csv` in the timestamped subdirectory.
-4. (Optional) To resume an existing or partially completed hyperparameter tuning experiment, run `python run_longExp_ht.py --resume ../ctg_dataset/Old Dataset/optuna/20241008_1152`. Update the path to an existing or partially completed hyperparameter tuning experiment if required.
+3. Run `python run_longExp_ht.py --dataset "<path to your dataset>"` to run the hyperparameter tuning experiment on your dataset. A new timestamped subdirectory will be created in a subdirectory named "optuna" within the dataset directory, where the hyperparameter tuning results will be saved. To check the completed trials during execution of this script, check `optuna_study_results.csv` in the timestamped subdirectory.
+4. (Optional) To resume an existing or partially completed hyperparameter tuning experiment, run `python run_longExp_ht.py --resume ../ctg_dataset/<your daatset directory>/optuna/<timestamp>`. Update the path to an existing or partially completed hyperparameter tuning experiment.
 5. Run the cells in `~/patchctg/check_results_ht.ipynb` notebook to see the hyperparameter tuning results. For more details on the hyperparameters used and performance achieved in each trial, check `optuna_study_results_final.csv` in the timestamped subdirectory after the experiment has completed. 
 
 <!-- ## Updates made in the original repository 
