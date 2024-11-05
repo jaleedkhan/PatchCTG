@@ -57,10 +57,10 @@ This is the codebase for Patch Transformer for CTG classification (PatchCTG). Th
 ### Testing 
 1. Navigate to ~/patchctg/PatchTST_supervised: `cd ~/patchctg/PatchTST_supervised`
 2. Uncomment the python command with comment `# SCRIPT 3: TEST`. Comment out the other two python commands.
-3. The trained model path is set to `~/patchctg/ctg_dataset/Old Dataset (Cases Diff 3-7)/trained 20241019 0209` in the script `scripts/PatchTST/ctg.sh`. You can update it using the `--model_to_test` argument if needed.
-4. The path to the dataset (including val/test set) is set to `~/patchctg/ctg_dataset/Old Dataset (Cases Diff 0-2)` in the script `scripts/PatchTST/ctg.sh`. You can update the dataset path (`--dataset_path` argument) in this script if needed.
+3. Set the trained model path to your trained model directory (the timestamped directory saved within the dataset directory after training) using the `--model_to_test` argument in the script `scripts/PatchTST/ctg.sh`.
+4. Set the path to the dataset (including val/test set) to your dataset path (`--dataset_path` argument) in `scripts/PatchTST/ctg.sh`.
 5. Run `sh scripts/PatchTST/ctg.sh` to test the model. Upon completion, results are saved in a timestamped subdirectory within the dataset directory.
-6. Run the cells in `~/patchctg/check_results.ipynb` notebook to see the dataset statistics, hyperparameters and results after the experiment has completed. The dataset_path variable is set to `ctg_dataset/Old Dataset/` in this notebook, which you can update to `~/patchctg/ctg_dataset/Old Dataset (Cases Diff 0-2)` or your dataset path. 
+6. Set the `dataset_path` variable to your dataset path in `~/patchctg/check_results.ipynb` notebook and run the cells in  to see the dataset statistics, hyperparameters and results after the experiment has completed.
 
 ### Hyperparameter Tuning
 1. Navigate to ~/patchctg/PatchTST_supervised: `cd ~/patchctg/PatchTST_supervised`
